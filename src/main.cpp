@@ -18,7 +18,13 @@ int main(int argc, char* argv[]) {
         Renderer::Instance().SetColor(255,0,0,127);
 
         // Pintamos el rectángulo
-        Renderer::Instance().DrawRect(16, 16, WIDTH-16, HEIGHT-16);
+        Renderer::Instance().DrawRect(16, 16, WIDTH-(16*2), HEIGHT-(16*2));
+
+        // Cambiamos el color de pintado
+        Renderer::Instance().SetColor(0,255,0,127);
+
+        // Pintamos la elipse
+        Renderer::Instance().DrawEllipse(WIDTH/2, (16*2)+200, 370, 200);
 
 		// Refrescamos la pantalla
 		Screen::Instance().Refresh();

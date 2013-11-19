@@ -31,6 +31,7 @@ public:
     //virtual void DrawText(const Font* font, const String& text, double x, double y) const;
 protected:
     Renderer() {}
+    virtual ~Renderer() {}
 private:
     static Renderer* renderer;
 };

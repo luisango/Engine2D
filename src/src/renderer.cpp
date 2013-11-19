@@ -5,7 +5,7 @@
 #include "../include/math.h"
 #include <math.h>
 
-#define ELLIPSEPOINTS 32
+#define ELLIPSEPOINTS 64
 
 Renderer* Renderer::renderer = NULL;
 
@@ -35,7 +35,7 @@ void Renderer::SetOrigin(double x, double y) const {
 }
 
 void Renderer::Clear(uint8 r, uint8 g, uint8 b) const {
-	glClearColor(r, g, b, 127);
+	glClearColor(r, g, b, 0);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
