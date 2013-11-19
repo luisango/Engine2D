@@ -1,0 +1,6 @@
+src/Debug/*
+src/Release/*
+src/ipch/*
+*.sdf
+*.exe
+*.ipch
