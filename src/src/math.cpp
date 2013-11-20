@@ -43,13 +43,11 @@ double WrapValue(double val, double mod) {
 
 
 double Angle(double x1, double y1, double x2, double y2) {
-	// TAREA: Implementar funcion
-	return 0;
+    return WrapValue(DegATan2(y1-y2, x2-x1), 360);
 }
 
 double Distance(double x1, double y1, double x2, double y2) {
-	// TAREA: Implementar funcion
-	return 0;
+	return sqrt(pow(x2-x1, 2) + pow(y2-y1, 2));
 }
 
 bool ValueInRange(double value, double min, double max) {

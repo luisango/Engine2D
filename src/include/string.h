@@ -466,4 +466,63 @@ inline Array<String> String::Split(const String& delim) const {
     return arr;
 }
 
+inline bool operator==(const char* c, const String& other)
+{
+	int comp = strcmp(c, other.ToCString());
+	if (comp == 0)
+		return true;
+	else
+		return false;
+}
+
+inline bool operator!=(const char* c, const String& other) 
+{
+	int comp = strcmp(c, other.ToCString());
+	if (comp == 0)
+		return false;
+	else
+		return true;
+}
+
+inline bool operator<(const char* c, const String& other)
+{
+	int comp = strcmp(c, other.ToCString());
+	if (comp < 0)
+		return true;
+	else
+		return false;
+}
+
+inline bool operator>(const char* c, const String& other)
+{
+	int comp = strcmp(c, other.ToCString());
+	if (comp > 0)
+		return true;
+	else
+		return false;
+}
+
+inline String operator+(const char* c, const String& other)
+{
+	int length = strlen(c);
+	char *aux = new char[length + other.Length() + 1];
+	strcpy(aux, c);
+	strcat(aux, other.ToCString());
+	String resultado(aux);
+	delete aux;
+	return resultado;
+}
+
+inline String operator+(char c, const String& other)
+{
+	char *aux = new char[other.Length()+2];
+	aux[0] = c;
+	char * p1adv = aux + 1;
+	strncpy(p1adv, other.ToCString(), other.Length());
+	aux[other.Length()+1] = 0;
+	String resultado(aux);
+	delete aux;
+	return resultado;
+}
+
 #endif // UGINE_STRING_H
