@@ -1,6 +1,8 @@
 #ifndef UGINE_MAIN_H
 #define UGINE_MAIN_H
 
+#define __cplusplus
+
 #include "array.h"
 //#include "bone.h"
 //#include "camera.h"
@@ -8,7 +10,7 @@
 //#include "emitter.h"
 //#include "font.h"
 #include "glinclude.h"
-//#include "image.h"
+#include "image.h"
 //#include "isometricmap.h"
 //#include "isometricscene.h"
 //#include "isometricsprite.h"
@@ -18,7 +20,7 @@
 //#include "parallaxscene.h"
 //#include "particle.h"
 #include "renderer.h"
-//#include "resourcemanager.h"
+#include "resourcemanager.h"
 //#include "scene.h"
 #include "screen.h"
 //#include "skeletonsprite.h"
