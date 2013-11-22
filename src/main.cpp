@@ -20,12 +20,11 @@ int main(int argc, char* argv[])
     Screen::Instance().Open(WIDTH, HEIGHT, false); 
 
     // Tarea: Cargar la imagen "data/ball.png"
-    Image * img = ResourceManager::Instance().LoadImage("data/ball.png");
+    Image * img = ResourceManager::Instance().LoadImage("data/soccer_npot.png");
 
 	double angle = 0;
-	double scale = 1;
-	double scale_step = 0.5;
-	double scale_state = 1;
+	double scale = 0.5;
+	double scale_increment = 2;
 
     // Tarea: centrar la imagen
     img->SetMidHandle();
@@ -33,17 +32,19 @@ int main(int argc, char* argv[])
     while(Screen::Instance().IsOpened() && !Screen::Instance().KeyPressed(GLFW_KEY_ESC))
     { 
         // TAREA: Actualizar ángulo y escala de la imagen
-		if (scale_state) {
-			if (scale + scale_step < 5)
-				scale += scale_step * Screen::Instance().ElapsedTime();
-			else
-				scale_state = 0;
-		} else {
-			if (scale - scale_step > 1)
-				scale -= scale_step * Screen::Instance().ElapsedTime();
-			else
-				scale_state = 1;
-		}
+        scale += scale_increment * Screen::Instance().ElapsedTime();
+        
+        if (scale >= 5) {
+            scale = 5;
+            scale_increment = scale_increment * -1;
+        }
+
+        if (scale <= 0.5) {
+            scale = 0.5;
+            scale_increment = scale_increment * -1;
+        }
+
+		angle += 30 * Screen::Instance().ElapsedTime();
 		
 		Screen::Instance().SetTitle("SCALE = " + String::FromFloat(img->GetWidth()*scale));
         // TAREA: Limpiar pantalla y dibujar la imagen
@@ -53,8 +54,6 @@ int main(int argc, char* argv[])
 
         // Refrescamos la pantalla 
         Screen::Instance().Refresh(); 
-
-		angle += 20 * Screen::Instance().ElapsedTime();
     } 
 
     ResourceManager::Instance().FreeResources();
