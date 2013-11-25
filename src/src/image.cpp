@@ -41,27 +41,19 @@ Image::Image(const String &filename, uint16 hframes, uint16 vframes) {
     height = image_y;
 
     // Comprobar que ancho y alto no sea potencia de 2
-    while (!(image_x & 1)) // X pot 2?
-        image_x = image_x >> 1; 
-
-    while (!(image_y & 1)) // Y pot 2?
-        image_y = image_y >> 1; 
-
-    bool is_y_pot = image_y == 1;
-    bool is_x_pot = image_x == 1;
-
-    if (!is_x_pot || !is_y_pot) {
+    if (!IsPOT(image_x) || !IsPOT(image_y)) {
         needs_to_be_scaled = true;
 
+        // Calculamos el nuevo tamaño POT
         new_width  = pow(2, ceil(Log2(width)));
         new_height = pow(2, ceil(Log2(height)));
 
+        // Creamos el nuevo buffer
         uint64 new_image_size = new_width * new_height * 4;
-        uint64 old_image_size = width * height * 4;
-
         image_scaled_buffer = new unsigned char[new_image_size];
         memset(image_scaled_buffer, 0, new_image_size);
 
+        // Copiamos imagen en el nuevo buffer
         for (uint32 y = 0; y < height; y++)
             for (uint32 x = 0; x < width; x++) 
                 for (uint8 c = 0; c < 4; c++)
@@ -72,6 +64,9 @@ Image::Image(const String &filename, uint16 hframes, uint16 vframes) {
         // Cambiar las coordenadas de textura
         lastU = width*lastU/new_width;
 	    lastV = height*lastV/new_height;
+
+        // Liberamos el no_scaled_buffer
+        stbi_image_free(image_no_scaled_buffer);
     } else {
         image_buffer = image_no_scaled_buffer;
     }

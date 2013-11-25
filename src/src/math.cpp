@@ -41,7 +41,6 @@ double WrapValue(double val, double mod) {
     return val - mod*floor(val/mod);
 }
 
-
 double Angle(double x1, double y1, double x2, double y2) {
     return WrapValue(DegATan2(y1-y2, x2-x1), 360);
 }
@@ -75,4 +74,11 @@ void OverlappingRect(double x1, double y1, double width1, double height1, double
 
 void TransformIsoCoords(double isoX, double isoY, double isoZ, double* screenX, double* screenY) {
 	// TAREA: Implementar funcion
+}
+
+bool IsPOT(int x) {
+    while (!(x & 1)) 
+        x = x >> 1; 
+
+    return x == 1;
 }
