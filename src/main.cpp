@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     Image * img = ResourceManager::Instance().LoadImage("data/soccer_npot.png");
 
 	double angle = 0;
-	double scale = 0.5;
+	double scale = 1;//0.5;
 	double scale_increment = 2;
 
     // Tarea: centrar la imagen

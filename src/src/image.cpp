@@ -24,10 +24,21 @@ Image::Image(const String &filename, uint16 hframes, uint16 vframes) {
     int image_x    = 0;
     int image_y    = 0;
     int image_comp = 0;
+
+    uint32 new_width  = 0;  
+    uint32 new_height = 0;
+
+    bool needs_to_be_scaled = false;
+
     unsigned char * image_buffer;
+    unsigned char * image_scaled_buffer;
+    unsigned char * image_no_scaled_buffer;
 
     // Carga en buffer de la imagen
-    image_buffer = stbi_load(filename.ToCString(), &image_x, &image_y, &image_comp, 4);
+    image_no_scaled_buffer = stbi_load(filename.ToCString(), &image_x, &image_y, &image_comp, 4);
+
+    width  = image_x;
+    height = image_y;
 
     // Comprobar que ancho y alto no sea potencia de 2
     while (!(image_x & 1)) // X pot 2?
@@ -39,24 +50,31 @@ Image::Image(const String &filename, uint16 hframes, uint16 vframes) {
     bool is_y_pot = image_y == 1;
     bool is_x_pot = image_x == 1;
 
-    if (is_x_pot || is_y_pot) {
-        // hacer el nuevo buffer, el buffer viene con RGBA
-        // El tamaño del buffer es W*H*4
-        // image_buffer[i]   = R
-        // image_buffer[i+1] = G
-        // image_buffer[i+2] = B
-        // image_buffer[i+3] = A
+    if (!is_x_pot || !is_y_pot) {
+        needs_to_be_scaled = true;
 
-        // Se recalcula cual es las nuevas coordenadas
-        // Unos señores for que rellenen el nuevo buffer y completen los pixeles que faltan
+        new_width  = pow(2, ceil(Log2(width)));
+        new_height = pow(2, ceil(Log2(height)));
 
-        // memset (nuevoBuffer, 255, nuevoAncho*nuevoAlto*4);
-        // Luego copiar la imagen vieja al nuevo buffer
-        // ¡Ya lo tienes campeon!
+        uint64 new_image_size = new_width * new_height * 4;
+        uint64 old_image_size = width * height * 4;
+
+        image_scaled_buffer = new unsigned char[new_image_size];
+        memset(image_scaled_buffer, 0, new_image_size);
+
+        for (uint32 y = 0; y < height; y++)
+            for (uint32 x = 0; x < width; x++) 
+                for (uint8 c = 0; c < 4; c++)
+                    image_scaled_buffer[(y*new_width+x) * 4 + c] = image_no_scaled_buffer[(y*width+x) * 4 + c];
+
+        image_buffer = image_scaled_buffer;
+
+        // Cambiar las coordenadas de textura
+        lastU = width*lastU/new_width;
+	    lastV = height*lastV/new_height;
+    } else {
+        image_buffer = image_no_scaled_buffer;
     }
-
-    width  = image_x;
-    height = image_y;
 
 	// Generamos la textura
 	if ( image_buffer ) {
@@ -72,7 +90,10 @@ Image::Image(const String &filename, uint16 hframes, uint16 vframes) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         // Paso 4
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_buffer);
+        if (needs_to_be_scaled)
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, new_width, new_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_buffer);
+        else
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_buffer);
 
         // Paso 5
         stbi_image_free(image_buffer);
