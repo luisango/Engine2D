@@ -6,57 +6,137 @@
 const int WIDTH = 800;
 const int HEIGHT = 600;
 
-// Circle options
-const int CIRCLE_SIDES = 64;
-const int CIRCLE_RADIUS = 10;
-const int CIRCLE_ANGLE_SPEED = 1;
-const int CIRCLE_DISTANCE = 40;
-
-// Square options
-const int SQUARE_C_SIDE = 12;
-
 int main(int argc, char* argv[])
 { 
-    Screen::Instance().Open(WIDTH, HEIGHT, false); 
+    Screen& screen            = Screen::Instance();
+    const Renderer& renderer  = Renderer::Instance();
+    ResourceManager& rm       = ResourceManager::Instance(); 
 
-    // Tarea: Cargar la imagen "data/ball.png"
-    Image * img = ResourceManager::Instance().LoadImage("data/soccer_npot.png");
+    screen.Open(WIDTH, HEIGHT, false); 
 
-	double angle = 0;
-	double scale = 1;//0.5;
-	double scale_increment = 2;
+    double cch = 0; // Circle Center Horizontal (para dibujar los circulos relativo a este punto)
+	double ccv = 0; // Circle Center Vertical
 
-    // Tarea: centrar la imagen
-    img->SetMidHandle();
-	
-    while(Screen::Instance().IsOpened() && !Screen::Instance().KeyPressed(GLFW_KEY_ESC))
+    double dist  = 28;
+    double radio = 32;
+
+    Image * img_box   = rm.LoadImage("data/box.jpg");
+    Image * img_light = rm.LoadImage("data/light.png");
+
+    GLenum src[] = { GL_ZERO, GL_ONE, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA };
+    GLenum dst[] = { GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA };
+
+    while(screen.IsOpened() && !screen.KeyPressed(GLFW_KEY_ESC))
     { 
-        // TAREA: Actualizar ángulo y escala de la imagen
-        scale += scale_increment * Screen::Instance().ElapsedTime();
+        // TAREA: Pintar franjas de pantalla
+        renderer.Clear();
+        renderer.SetColor(255, 255, 255, 255);
+
+        ccv = img_box->GetHeight();
+        for (int i = 0; i < 6; i++) 
+        {
+            cch = img_box->GetWidth();
+
+            for (int j = 0; j < 6; j++) 
+            {
+                // Cambiamos a solid
+                renderer.SetBlendMode(Renderer::BlendMode::SOLID);
+
+                // Pintamos la caja
+                img_box->SetMidHandle();
+                renderer.DrawImage(img_box,   ccv, cch, 0, img_box->GetWidth(),   img_box->GetHeight(),   0);
+
+                // Cambiamos al modo X,Y
+                glBlendFunc(src[i], dst[j]);
+
+                // Pintamos la luz
+                img_light->SetMidHandle();
+                renderer.DrawImage(img_light, ccv, cch, 0, img_light->GetWidth(), img_light->GetHeight(), 0);
+
+                cch += img_box->GetWidth();
+            }
+
+            ccv += img_box->GetHeight();
+        }
         
-        if (scale >= 5) {
-            scale = 5;
-            scale_increment = scale_increment * -1;
-        }
+        /*------------------------------------------------------------------------------------------------------------------ 
+        // TAREA: Pintar franjas de pantalla
+        renderer.Clear();
+        renderer.SetColor(255, 255, 255, 255);
+        renderer.DrawRect(WIDTH / 3, 0, WIDTH / 3, HEIGHT);
 
-        if (scale <= 0.5) {
-            scale = 0.5;
-            scale_increment = scale_increment * -1;
-        }
+        // TAREA: Pintar círculos en modo SOLID 
+        renderer.SetBlendMode(Renderer::BlendMode::SOLID);
+        cch = WIDTH / 2;
+        ccv = HEIGHT / 6;
 
-		angle += 30 * Screen::Instance().ElapsedTime();
-		
-		Screen::Instance().SetTitle("SCALE = " + String::FromFloat(img->GetWidth()*scale));
-        // TAREA: Limpiar pantalla y dibujar la imagen
-        Renderer::Instance().Clear();
-		
-		Renderer::Instance().DrawImage(img, WIDTH/2, HEIGHT/2, 0, img->GetWidth()*scale, img->GetHeight()*scale, WrapValue(angle, 360));
+        // RED
+        renderer.SetColor(255, 0, 0, 255);
+        renderer.DrawEllipse(cch, ccv - dist/2, radio, radio);
+
+        // GREEN
+        renderer.SetColor(0, 255, 0, 255);
+        renderer.DrawEllipse(cch - dist/1.7, ccv + dist/2, radio, radio);
+
+        // BLUE
+        renderer.SetColor(0, 0, 255, 255);
+        renderer.DrawEllipse(cch + dist/1.7, ccv + dist/2, radio, radio);
+
+        // TAREA: Pintar círculos en modo ALPHA 
+        renderer.SetBlendMode(Renderer::BlendMode::ALPHA);
+        cch = WIDTH / 6;
+        ccv = HEIGHT / 2;
+
+        // RED
+        renderer.SetColor(255, 0, 0, 128);
+        renderer.DrawEllipse(cch, ccv - dist/2, radio, radio);
+
+        // GREEN
+        renderer.SetColor(0, 255, 0, 128);
+        renderer.DrawEllipse(cch - dist/1.7, ccv + dist/2, radio, radio);
+
+        // BLUE
+        renderer.SetColor(0, 0, 255, 128);
+        renderer.DrawEllipse(cch + dist/1.7, ccv + dist/2, radio, radio);
+
+        // TAREA: Pintar círculos en modo MULTIPLICATIVE 
+        renderer.SetBlendMode(Renderer::BlendMode::MULTIPLICATIVE);
+        cch = WIDTH / 2;
+        ccv = HEIGHT - HEIGHT / 6;
+
+        // RED
+        renderer.SetColor(255, 0, 0, 255);
+        renderer.DrawEllipse(cch, ccv - dist/2, radio, radio);
+
+        // GREEN
+        renderer.SetColor(0, 255, 0, 255);
+        renderer.DrawEllipse(cch - dist/1.7, ccv + dist/2, radio, radio);
+
+        // BLUE
+        renderer.SetColor(0, 0, 255, 255);
+        renderer.DrawEllipse(cch + dist/1.7, ccv + dist/2, radio, radio);
+
+        // TAREA: Pintar círculos en modo ADDITIVE
+        renderer.SetBlendMode(Renderer::BlendMode::ADDITIVE);
+        cch = WIDTH / 6 * 5;
+        ccv = HEIGHT / 2;
+
+        // RED
+        renderer.SetColor(255, 0, 0, 255);
+        renderer.DrawEllipse(cch, ccv - dist/2, radio, radio);
+
+        // GREEN
+        renderer.SetColor(0, 255, 0, 255);
+        renderer.DrawEllipse(cch - dist/1.7, ccv + dist/2, radio, radio);
+
+        // BLUE
+        renderer.SetColor(0, 0, 255, 255);
+        renderer.DrawEllipse(cch + dist/1.7, ccv + dist/2, radio, radio);
+        ------------------------------------------------------------------------------------------------------------------ */
 
         // Refrescamos la pantalla 
-        Screen::Instance().Refresh(); 
+        screen.Refresh(); 
     } 
-
-    ResourceManager::Instance().FreeResources();
 
     return 0; 
 }
