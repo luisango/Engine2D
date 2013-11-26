@@ -18,6 +18,7 @@
     <ClCompile Include="src\renderer.cpp" />
     <ClCompile Include="src\resourcemanager.cpp" />
     <ClCompile Include="src\screen.cpp" />
+    <ClCompile Include="src\sprite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\array.h" />
@@ -27,6 +28,7 @@
     <ClInclude Include="include\renderer.h" />
     <ClInclude Include="include\resourcemanager.h" />
     <ClInclude Include="include\screen.h" />
+    <ClInclude Include="include\sprite.h" />
     <ClInclude Include="include\string.h" />
     <ClInclude Include="include\types.h" />
     <ClInclude Include="include\u-gine.h" />

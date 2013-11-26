@@ -1,8 +1,6 @@
 #ifndef UGINE_MAIN_H
 #define UGINE_MAIN_H
 
-#define __cplusplus
-
 #include "array.h"
 //#include "bone.h"
 //#include "camera.h"
@@ -24,7 +22,7 @@
 //#include "scene.h"
 #include "screen.h"
 //#include "skeletonsprite.h"
-//#include "sprite.h"
+#include "sprite.h"
 #include "string.h"
 #include "types.h"
 
