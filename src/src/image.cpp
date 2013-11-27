@@ -82,7 +82,7 @@ Image::Image(const String &filename, uint16 hframes, uint16 vframes) {
 
         // Paso 3
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
         // Paso 4
         if (needs_to_be_scaled)

@@ -35,7 +35,7 @@ void Renderer::SetOrigin(double x, double y) const {
 }
 
 void Renderer::Clear(uint8 r, uint8 g, uint8 b) const {
-	glClearColor(r, g, b, 0);
+	glClearColor(r/255.0f, g/255.0f, b/255.0f, 255);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 

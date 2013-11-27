@@ -15,23 +15,29 @@ int main(int argc, char* argv[])
     screen.Open(WIDTH, HEIGHT, false); 
 
 	// Tarea: Cargar la imagen "data/ball.png"
-	Image * img = rm.LoadImage("data/soccer_npot.png");
+	Image * img = rm.LoadImage("data/alien.png");
 	Sprite * sprite = new Sprite(img);
+    sprite->SetBlendMode(Renderer::BlendMode::ALPHA);
 
-	double angle = 0;
 	double scale = 1;//0.5;
 	double scale_increment = 2;
+    
+    sprite->SetX(WIDTH / 2);
+    sprite->SetY(HEIGHT / 2);
+
+    //sprite->SetScale(3, 3);
 
 	// Tarea: centrar la imagen
 	img->SetMidHandle();
-        
+    
 	while(screen.IsOpened() && !screen.KeyPressed(GLFW_KEY_ESC))
 	{ 
+        sprite->Update(screen.ElapsedTime());
 		// TAREA: Actualizar ángulo y escala de la imagen
-		scale += scale_increment * screen.ElapsedTime();
+		/*scale += scale_increment * screen.ElapsedTime();
         
-		if (scale >= 5) {
-			scale = 5;
+		if (scale >= 2) {
+			scale = 2;
 			scale_increment = scale_increment * -1;
 		}
 
@@ -39,26 +45,53 @@ int main(int argc, char* argv[])
 			scale = 0.5;
 			scale_increment = scale_increment * -1;
 		}
-
-		angle += 30 * screen.ElapsedTime();
         
-		sprite->SetScale(scale, scale);
-		sprite->SetAngle(angle);
+		sprite->SetScale(scale, scale);*/
 
-		screen.SetTitle("SCALE = " + String::FromFloat(img->GetWidth()*scale));
+        screen.SetTitle("SCALE = " + String::FromFloat(img->GetWidth()*scale) + " ANGLE = " + String::FromInt((int) sprite->GetAngle()) + " / " );
+
 		// TAREA: Limpiar pantalla y dibujar la imagen
-		renderer.Clear();
-                
+		renderer.Clear(130, 160, 250);
+
 		sprite->Render();
 
-		renderer.DrawImage(
-			sprite->GetImage(), 
-			WIDTH/2, HEIGHT/2, 
-			sprite->GetCurrentFrame(), 
-			sprite->GetImage()->GetWidth() * sprite->GetScaleX(), 
-			sprite->GetImage()->GetHeight() * sprite->GetScaleY(), 
-			sprite->GetAngle()
-		);
+        if (screen.GetMouseX() > sprite->GetX())
+            sprite->RotateTo(-15, 10);
+
+        if (screen.GetMouseX() < sprite->GetX())
+            sprite->RotateTo(15, 10);
+
+        if (screen.GetMouseX() == sprite->GetX())
+            sprite->RotateTo(0, 10);
+
+        if (!sprite->IsRotating()) 
+        {
+            int ang = (int) sprite->GetAngle();
+            switch(ang) 
+            {
+            case 15:
+                   
+                break;
+            case 345:
+                   
+                break;
+            }
+        }
+
+        /*if (!sprite->IsRotating()) {
+            angle = WrapValue(angle + 60, 360);
+            sprite->RotateTo(angle, 30);
+        }*/
+
+        /*if (!sprite->IsMoving()) {
+            int x = Abs(screen.GetMouseX());
+            x = (x < WIDTH) ? x : 0;
+
+            int y = Abs(screen.GetMouseY());
+            y = (y < HEIGHT) ? y : 0;
+
+            sprite->MoveTo(x, y, 30, 30);
+        }*/
 
         // Refrescamos la pantalla 
         screen.Refresh(); 
