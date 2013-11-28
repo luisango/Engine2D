@@ -72,23 +72,27 @@ void Sprite::RotateTo(int32 angle, double speed) {
         rotatingSpeed *= -1;
         anglesToRotate = uno;
     }
-
-    if (anglesToRotate > 200)
-        int i = 0;
 }
 
 void Sprite::MoveTo(double x, double y, double speedX, double speedY) {
 	// TAREA: Implementar
 
-	if (speedY == 0) {
-		double time = Abs(this->x - x);
-	}
-
     toX = x;
     toY = y;
-    movingSpeedX = (toX < this->x) ? -1 * speedX : speedX;
-    movingSpeedY = (toY < this->y) ? -1 * speedY : speedY;
     moving = true;
+
+	if (speedY == 0) {
+		double time = Abs((toX - this->x) / speedX) + Abs((toY - this->y) / speedX);
+
+        movingSpeedX = Abs(toX - this->x) / time;
+        movingSpeedY = Abs(toY - this->y) / time;
+	} else {
+        movingSpeedX = speedX;
+        movingSpeedY = speedY;
+    }
+    
+    movingSpeedX = (toX < this->x) ? -1 * movingSpeedX : movingSpeedX;
+    movingSpeedY = (toY < this->y) ? -1 * movingSpeedY : movingSpeedY;
 }
 
 void Sprite::Update(double elapsed, const Map* map) {
@@ -143,12 +147,6 @@ void Sprite::Render() const {
 		GetImage()->GetHeight() * GetScaleY(), 
 		GetAngle()
 	);
-
-    Renderer::Instance().SetColor(255, 0, 255, 255);
-    Renderer::Instance().DrawLine(
-        GetX(),       GetY(), 
-        GetX() + 200, GetY()
-    );
 }
 
 void Sprite::UpdateCollisionBox() {

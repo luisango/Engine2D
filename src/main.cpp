@@ -5,6 +5,7 @@
 
 const int WIDTH = 800;
 const int HEIGHT = 600;
+const bool FULLSCREEN = false;
 
 int main(int argc, char* argv[])
 { 
@@ -12,9 +13,14 @@ int main(int argc, char* argv[])
     const Renderer& renderer  = Renderer::Instance();
     ResourceManager& rm       = ResourceManager::Instance(); 
 
-    screen.Open(WIDTH, HEIGHT, false); 
+    screen.Open(WIDTH, HEIGHT, FULLSCREEN); 
 
 	// Tarea: Cargar la imagen "data/ball.png"
+    Image * cursor = rm.LoadImage("data/pizza_cursor.png");
+
+    Image * tile_floor    = rm.LoadImage("data/tile_floor.png");
+    Image * tile_palmtree = rm.LoadImage("data/tile_palmtree.png");
+
 	Image * img = rm.LoadImage("data/alien.png");
 	Sprite * sprite = new Sprite(img);
     sprite->SetBlendMode(Renderer::BlendMode::ALPHA);
@@ -53,19 +59,6 @@ int main(int argc, char* argv[])
         
 		sprite->SetScale(scale, scale);
 
-        screen.SetTitle(
-			"SCALE = " + String::FromInt((int)img->GetWidth()*scale) + 
-			" ANGLE = " + String::FromInt((int) sprite->GetAngle()) +
-			" SPEED = " + String::FromInt((int) sqrt(pow(speed_x, 2) + pow(speed_y, 2))) +
-			" POS = ( " + String::FromFloat(sprite->prevX) + " / " + String::FromInt(mouse_x) +
-			", " + String::FromFloat(sprite->prevY) + " / " + String::FromInt(mouse_y) + " )"
-		);
-
-		// TAREA: Limpiar pantalla y dibujar la imagen
-		renderer.Clear(130, 160, 250);
-
-		sprite->Render();
-
         if (mouse_x > sprite->GetX())
             sprite->RotateTo(-15, 10);
 
@@ -87,6 +80,30 @@ int main(int argc, char* argv[])
 			else 
 				sprite->MoveTo(mouse_x, mouse_y, speed_x, speed_y);
 		}
+
+        screen.SetTitle(
+			"SCALE = " + String::FromInt((int)img->GetWidth()*scale) + 
+			" ANGLE = " + String::FromInt((int) sprite->GetAngle()) +
+			" SPEED = " + String::FromInt((int) sqrt(pow(speed_x, 2) + pow(speed_y, 2)))
+		);
+
+		// TAREA: Limpiar pantalla y dibujar la imagen
+        renderer.Clear(130, 160, 250);
+
+        // DRAW BACK
+        renderer.DrawImage(tile_palmtree, WIDTH - 200, HEIGHT - tile_floor->GetHeight() - tile_palmtree->GetHeight(), 0, tile_palmtree->GetWidth(), tile_palmtree->GetHeight(), 0);
+        
+        // DRAW MOÑOÑO
+		sprite->Render();
+
+        // DRAW FRONT
+        for (int i = 0; i < WIDTH + tile_floor->GetWidth(); i += tile_floor->GetWidth())
+        {
+            renderer.DrawImage(tile_floor, i, HEIGHT - tile_floor->GetHeight(), 0, tile_floor->GetWidth(), tile_floor->GetHeight(), 0);
+        }
+
+        // DRAW CURSOR
+        renderer.DrawImage(cursor, screen.GetMouseX(), screen.GetMouseY(), 0, cursor->GetWidth(), cursor->GetHeight(), 0);
 
         // Refrescamos la pantalla 
         screen.Refresh(); 
