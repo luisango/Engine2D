@@ -86,3 +86,7 @@ bool IsPOT(int x) {
 double Abs(double x) {
     return (x > 0) ? x : x * -1;
 }
+
+bool IsBetweenOrEqual(double value, double min, double max) {
+	return (min <= value) && (value <= max);  
+}

@@ -101,7 +101,7 @@ private:
     uint16 toAngle;
     double rotatingSpeed;
     double anglesToRotate;
-
+public:
     bool moving;
     double toX, toY;
     double movingSpeedX, movingSpeedY;

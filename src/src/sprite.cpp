@@ -81,8 +81,8 @@ void Sprite::MoveTo(double x, double y, double speedX, double speedY) {
 	// TAREA: Implementar
     toX = x;
     toY = y;
-    movingSpeedX = speedX;
-    movingSpeedY = speedY;
+    movingSpeedX = (toX < this->x) ? -1 * speedX : speedX;
+    movingSpeedY = (toY < this->y) ? -1 * speedY : speedY;
     moving = true;
 }
 
@@ -111,15 +111,14 @@ void Sprite::Update(double elapsed, const Map* map) {
     
 	// TAREA: Actualizar movimiento animado
     if (moving) {
-        if (x + movingSpeedX * elapsed <= toX)
-            x += movingSpeedX * elapsed; 
-        else
-            x = toX;
+		double next_x = x + movingSpeedX * elapsed;
+		double next_y = y + movingSpeedY * elapsed;
 
-        if (y + movingSpeedY * elapsed <= toY)
-            y += movingSpeedY * elapsed;
-        else
-            y = toY;
+		prevX = x;
+		prevY = y;
+
+        x = next_x;
+		y = next_y;
 
         if (x == toX && y == toY)
             moving = false;

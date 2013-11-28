@@ -22,6 +22,9 @@ int main(int argc, char* argv[])
 	double scale = 1;//0.5;
 	double scale_increment = 2;
     
+	double speed_x = 0;
+	double speed_y = 0;
+
     sprite->SetX(WIDTH / 2);
     sprite->SetY(HEIGHT / 2);
 
@@ -32,12 +35,15 @@ int main(int argc, char* argv[])
     
 	while(screen.IsOpened() && !screen.KeyPressed(GLFW_KEY_ESC))
 	{ 
+		int32 mouse_x = screen.GetMouseX();
+		int32 mouse_y = screen.GetMouseY();
+
         sprite->Update(screen.ElapsedTime());
 		// TAREA: Actualizar ángulo y escala de la imagen
 		/*scale += scale_increment * screen.ElapsedTime();
         
-		if (scale >= 2) {
-			scale = 2;
+		if (scale >= 1) {
+			scale = 1;
 			scale_increment = scale_increment * -1;
 		}
 
@@ -48,50 +54,40 @@ int main(int argc, char* argv[])
         
 		sprite->SetScale(scale, scale);*/
 
-        screen.SetTitle("SCALE = " + String::FromFloat(img->GetWidth()*scale) + " ANGLE = " + String::FromInt((int) sprite->GetAngle()) + " / " );
+        screen.SetTitle(
+			"SCALE = " + String::FromInt((int)img->GetWidth()*scale) + 
+			" ANGLE = " + String::FromInt((int) sprite->GetAngle()) +
+			" SPEED = " + String::FromInt((int) sqrt(pow(speed_x, 2) + pow(speed_y, 2))) +
+			" POS = ( " + String::FromFloat(sprite->prevX) + " / " + String::FromInt(mouse_x) +
+			", " + String::FromFloat(sprite->prevY) + " / " + String::FromInt(mouse_y) + " )"
+		);
 
 		// TAREA: Limpiar pantalla y dibujar la imagen
 		renderer.Clear(130, 160, 250);
 
 		sprite->Render();
 
-        if (screen.GetMouseX() > sprite->GetX())
+        if (mouse_x > sprite->GetX())
             sprite->RotateTo(-15, 10);
 
-        if (screen.GetMouseX() < sprite->GetX())
+        if (mouse_x < sprite->GetX())
             sprite->RotateTo(15, 10);
 
-        if (screen.GetMouseX() == sprite->GetX())
+        if (mouse_x == sprite->GetX())
             sprite->RotateTo(0, 10);
 
-        if (!sprite->IsRotating()) 
-        {
-            int ang = (int) sprite->GetAngle();
-            switch(ang) 
-            {
-            case 15:
-                   
-                break;
-            case 345:
-                   
-                break;
-            }
-        }
+		if ( IsBetweenOrEqual(mouse_x, 0, WIDTH) && IsBetweenOrEqual(mouse_y, 0, HEIGHT) ) {
+			speed_x = Abs(mouse_x - sprite->GetX());
+			speed_x = (speed_x < 4) ? 4 : speed_x;
+			
+			speed_y = Abs(mouse_y - sprite->GetY());
+			speed_y = (speed_y < 4) ? 4 : speed_y;
 
-        /*if (!sprite->IsRotating()) {
-            angle = WrapValue(angle + 60, 360);
-            sprite->RotateTo(angle, 30);
-        }*/
-
-        /*if (!sprite->IsMoving()) {
-            int x = Abs(screen.GetMouseX());
-            x = (x < WIDTH) ? x : 0;
-
-            int y = Abs(screen.GetMouseY());
-            y = (y < HEIGHT) ? y : 0;
-
-            sprite->MoveTo(x, y, 30, 30);
-        }*/
+			if ( (mouse_x == sprite->GetX()) && (mouse_y == sprite->GetY()) )
+				speed_x = speed_y = 0;
+			else 
+				sprite->MoveTo(mouse_x, mouse_y, speed_x, speed_y);
+		}
 
         // Refrescamos la pantalla 
         screen.Refresh(); 
