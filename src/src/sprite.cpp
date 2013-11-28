@@ -79,6 +79,11 @@ void Sprite::RotateTo(int32 angle, double speed) {
 
 void Sprite::MoveTo(double x, double y, double speedX, double speedY) {
 	// TAREA: Implementar
+
+	if (speedY == 0) {
+		double time = Abs(this->x - x);
+	}
+
     toX = x;
     toY = y;
     movingSpeedX = (toX < this->x) ? -1 * speedX : speedX;
@@ -110,19 +115,18 @@ void Sprite::Update(double elapsed, const Map* map) {
     }
     
 	// TAREA: Actualizar movimiento animado
-    if (moving) {
-		double next_x = x + movingSpeedX * elapsed;
-		double next_y = y + movingSpeedY * elapsed;
+	if (moving) {
+		x += movingSpeedX * elapsed;
+		y += movingSpeedY * elapsed;
 
-		prevX = x;
-		prevY = y;
+		if ( (movingSpeedX < 0 && x <= toX) || (0 < movingSpeedX && toX <= x) )
+			x = toX;
+		if ( (movingSpeedY < 0 && y <= toY) || (0 < movingSpeedY && toY <= y) )
+			y = toY;
 
-        x = next_x;
-		y = next_y;
-
-        if (x == toX && y == toY)
-            moving = false;
-    }
+		if (x == toX && y == toY)
+			moving = false;
+	}
 
 	// Informacion final de colision
 	UpdateCollisionBox();

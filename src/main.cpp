@@ -20,15 +20,13 @@ int main(int argc, char* argv[])
     sprite->SetBlendMode(Renderer::BlendMode::ALPHA);
 
 	double scale = 1;//0.5;
-	double scale_increment = 2;
+	double scale_increment = 0.1;
     
 	double speed_x = 0;
 	double speed_y = 0;
 
     sprite->SetX(WIDTH / 2);
     sprite->SetY(HEIGHT / 2);
-
-    //sprite->SetScale(3, 3);
 
 	// Tarea: centrar la imagen
 	img->SetMidHandle();
@@ -39,20 +37,21 @@ int main(int argc, char* argv[])
 		int32 mouse_y = screen.GetMouseY();
 
         sprite->Update(screen.ElapsedTime());
+
 		// TAREA: Actualizar ángulo y escala de la imagen
-		/*scale += scale_increment * screen.ElapsedTime();
+		scale += scale_increment * screen.ElapsedTime();
         
-		if (scale >= 1) {
-			scale = 1;
+		if (scale >= 1.5) {
+			scale = 1.5;
 			scale_increment = scale_increment * -1;
 		}
 
-		if (scale <= 0.5) {
-			scale = 0.5;
+		if (scale <= 0.8) {
+			scale = 0.8;
 			scale_increment = scale_increment * -1;
 		}
         
-		sprite->SetScale(scale, scale);*/
+		sprite->SetScale(scale, scale);
 
         screen.SetTitle(
 			"SCALE = " + String::FromInt((int)img->GetWidth()*scale) + 
