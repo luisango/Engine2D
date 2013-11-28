@@ -7,6 +7,16 @@ const int WIDTH = 800;
 const int HEIGHT = 600;
 const bool FULLSCREEN = false;
 
+void randomizeColor(Sprite * spr)
+{
+    spr->SetColor(
+        Random(0, 255), // r
+        Random(0, 255), // g
+        Random(0, 255), // b
+        Random(0, 255)  // a
+    );
+}
+
 int main(int argc, char* argv[])
 { 
     Screen& screen            = Screen::Instance();
@@ -15,95 +25,70 @@ int main(int argc, char* argv[])
 
     screen.Open(WIDTH, HEIGHT, FULLSCREEN); 
 
-	// Tarea: Cargar la imagen "data/ball.png"
-    Image * cursor = rm.LoadImage("data/pizza_cursor.png");
+    // Load speed
+    //             v------ (-1) porque el punto inicial colisiona con 0 y cambia la velocidad
+    int speed_x = -1 * Random(128, 255);
+    int speed_y = -1 * Random(128, 255);
 
-    Image * tile_floor    = rm.LoadImage("data/tile_floor.png");
-    Image * tile_palmtree = rm.LoadImage("data/tile_palmtree.png");
+    // Load font & create sprite
+    Font   * font_mono   = rm.LoadFont("data/monospaced.png");
+    Sprite * sprite_mono = new Sprite(font_mono);
 
-	Image * img = rm.LoadImage("data/alien.png");
-	Sprite * sprite = new Sprite(img);
-    sprite->SetBlendMode(Renderer::BlendMode::ALPHA);
+    // Set blend mode by default
+    sprite_mono->SetBlendMode(Renderer::BlendMode::ALPHA);
 
-	double scale = 1;//0.5;
-	double scale_increment = 0.1;
+    // Set initial color
+    randomizeColor(sprite_mono);
+
+    // Set string
+    String text = "Hola, mundo";
+
+    // Get width and heigth
+    double text_width  = font_mono->GetTextWidth(text);
+    double text_height = font_mono->GetTextHeight(text);
     
-	double speed_x = 0;
-	double speed_y = 0;
+    // Set initial position
+    int pos_x = 0;
+    int pos_y = 0;
 
-    sprite->SetX(WIDTH / 2);
-    sprite->SetY(HEIGHT / 2);
-
-	// Tarea: centrar la imagen
-	img->SetMidHandle();
-    
 	while(screen.IsOpened() && !screen.KeyPressed(GLFW_KEY_ESC))
 	{ 
-		int32 mouse_x = screen.GetMouseX();
-		int32 mouse_y = screen.GetMouseY();
-
-        sprite->Update(screen.ElapsedTime());
-
-		// TAREA: Actualizar ángulo y escala de la imagen
-		scale += scale_increment * screen.ElapsedTime();
+        // Update
+        sprite_mono->Update(screen.ElapsedTime());
         
-		if (scale >= 1.5) {
-			scale = 1.5;
-			scale_increment = scale_increment * -1;
-		}
-
-		if (scale <= 0.8) {
-			scale = 0.8;
-			scale_increment = scale_increment * -1;
-		}
-        
-		sprite->SetScale(scale, scale);
-
-        if (mouse_x > sprite->GetX())
-            sprite->RotateTo(-15, 10);
-
-        if (mouse_x < sprite->GetX())
-            sprite->RotateTo(15, 10);
-
-        if (mouse_x == sprite->GetX())
-            sprite->RotateTo(0, 10);
-
-		if ( IsBetweenOrEqual(mouse_x, 0, WIDTH) && IsBetweenOrEqual(mouse_y, 0, HEIGHT) ) {
-			speed_x = Abs(mouse_x - sprite->GetX());
-			speed_x = (speed_x < 4) ? 4 : speed_x;
-			
-			speed_y = Abs(mouse_y - sprite->GetY());
-			speed_y = (speed_y < 4) ? 4 : speed_y;
-
-			if ( (mouse_x == sprite->GetX()) && (mouse_y == sprite->GetY()) )
-				speed_x = speed_y = 0;
-			else 
-				sprite->MoveTo(mouse_x, mouse_y, speed_x, speed_y);
-		}
-
-        screen.SetTitle(
-			"SCALE = " + String::FromInt((int)img->GetWidth()*scale) + 
-			" ANGLE = " + String::FromInt((int) sprite->GetAngle()) +
-			" SPEED = " + String::FromInt((int) sqrt(pow(speed_x, 2) + pow(speed_y, 2)))
-		);
-
-		// TAREA: Limpiar pantalla y dibujar la imagen
-        renderer.Clear(130, 160, 250);
-
-        // DRAW BACK
-        renderer.DrawImage(tile_palmtree, WIDTH - 200, HEIGHT - tile_floor->GetHeight() - tile_palmtree->GetHeight(), 0, tile_palmtree->GetWidth(), tile_palmtree->GetHeight(), 0);
-        
-        // DRAW MOÑOÑO
-		sprite->Render();
-
-        // DRAW FRONT
-        for (int i = 0; i < WIDTH + tile_floor->GetWidth(); i += tile_floor->GetWidth())
-        {
-            renderer.DrawImage(tile_floor, i, HEIGHT - tile_floor->GetHeight(), 0, tile_floor->GetWidth(), tile_floor->GetHeight(), 0);
+        if ((int) sprite_mono->GetX() <= 0) {
+            // TODO: Cambiar velocidad
+            sprite_mono->SetX(0);
+            randomizeColor(sprite_mono);
         }
 
-        // DRAW CURSOR
-        renderer.DrawImage(cursor, screen.GetMouseX(), screen.GetMouseY(), 0, cursor->GetWidth(), cursor->GetHeight(), 0);
+        if ((int) sprite_mono->GetX() + text_width >= WIDTH) {
+            // TODO: Cambiar velocidad
+            sprite_mono->SetX(WIDTH - text_width);
+            randomizeColor(sprite_mono);
+        }
+        
+        if ((int) sprite_mono->GetY() <= 0) {
+            // TODO: Cambiar velocidad
+            sprite_mono->SetY(0);
+            randomizeColor(sprite_mono);
+        }
+
+        if ((int) sprite_mono->GetY() + text_height <= HEIGHT) {
+            // TODO: Cambiar velocidad
+            sprite_mono->SetY(HEIGHT - text_height);
+            randomizeColor(sprite_mono);
+        }
+
+        if (!sprite_mono->IsMoving())
+        {
+            int goto_x = 100; // TODO: Completar esta logica
+            int goto_y = 100;
+
+            sprite_mono->MoveTo(speed_x, speed_y);
+        }
+
+        ((Font *) sprite_mono->GetImage())->Render(text, 300, 300);
 
         // Refrescamos la pantalla 
         screen.Refresh(); 

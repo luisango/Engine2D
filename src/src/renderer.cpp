@@ -1,5 +1,5 @@
 #include "../include/renderer.h"
-//#include "../include/font.h"
+#include "../include/font.h"
 #include "../include/glinclude.h"
 #include "../include/image.h"
 #include "../include/math.h"
@@ -131,7 +131,7 @@ void Renderer::DrawTiledImage(const Image* image, double x, double y, double wid
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glPopMatrix();
 }
-/*
+
 void Renderer::DrawText(const Font* font, const String &text, double x, double y) const {
 	font->Render(text, x, y);
-}*/
+}

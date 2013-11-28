@@ -24,4 +24,5 @@ void TransformIsoCoords(double isoX, double isoY, double isoZ, double* screenX, 
 bool IsPOT(int x);
 double Abs(double x);
 bool IsBetweenOrEqual(double value, double min, double max);
+int Random(int min, int max);
 #endif

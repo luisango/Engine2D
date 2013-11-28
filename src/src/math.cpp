@@ -1,4 +1,5 @@
 #include "math.h"
+#include <stdlib.h>
 #include <math.h>
 
 #define DEG2RAD 0.0174532925
@@ -89,4 +90,8 @@ double Abs(double x) {
 
 bool IsBetweenOrEqual(double value, double min, double max) {
 	return (min <= value) && (value <= max);  
+}
+
+int Random(int min, int max) {
+    return rand() % max + min;
 }

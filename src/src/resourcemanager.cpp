@@ -1,6 +1,6 @@
 #include "../include/resourcemanager.h"
 //#include "../include/collisionpixeldata.h"
-//#include "../include/font.h"
+#include "../include/font.h"
 #include "../include/image.h"
 //#include "../include/isometricmap.h"
 //#include "../include/map.h"
@@ -32,7 +32,7 @@ ResourceManager& ResourceManager::Instance() {
         delete cp;
         return NULL;
     }
-}
+}*/
 
 Font* ResourceManager::LoadFont(const String &filename) {
 	// Comprobamos si esta cargada
@@ -50,7 +50,6 @@ Font* ResourceManager::LoadFont(const String &filename) {
 		return NULL;
 	}
 }
-*/
 
 Image* ResourceManager::LoadImage(const String &filename, uint16 hframes, uint16 vframes) {
 	// Comprobamos si esta cargada
@@ -102,14 +101,14 @@ IsometricMap* ResourceManager::LoadIsometricMap(const String &filename, uint16 f
 		delete isometricMap;
 		return NULL;
 	}
-}
+}*/
 
 void ResourceManager::FreeFonts() {
     for ( uint32 i = 0; i < fonts.Size(); i++ )
         delete fonts[i];
     fonts.Clear();
 }
-*/
+
 
 void ResourceManager::FreeImages() {
     for ( uint32 i = 0; i < images.Size(); i++ )
@@ -139,7 +138,7 @@ void ResourceManager::FreeIsometricMaps() {
 
 void ResourceManager::FreeResources() {
 	//FreeCollisionPixelDatas();
-	//FreeFonts();
+	FreeFonts();
 	FreeImages();
 	//FreeMaps();
 	//FreeIsometricMaps();
