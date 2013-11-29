@@ -14,6 +14,7 @@
     <ClCompile Include="lib\stb_image.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\font.cpp" />
+    <ClCompile Include="src\glyph.cpp" />
     <ClCompile Include="src\image.cpp" />
     <ClCompile Include="src\math.cpp" />
     <ClCompile Include="src\renderer.cpp" />
@@ -25,6 +26,7 @@
     <ClInclude Include="include\array.h" />
     <ClInclude Include="include\font.h" />
     <ClInclude Include="include\glinclude.h" />
+    <ClInclude Include="include\glyph.h" />
     <ClInclude Include="include\image.h" />
     <ClInclude Include="include\math.h" />
     <ClInclude Include="include\renderer.h" />

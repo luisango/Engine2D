@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
     randomizeColor(sprite_mono);
 
     // Set string
-    String text = "Hola, mundo";
+	String text = "Luisango #1";
 
     // Get width and heigth
     double text_width  = font_mono->GetTextWidth(text);
@@ -55,8 +55,7 @@ int main(int argc, char* argv[])
 	sprite_mono->SetY(0);
 
 	while(screen.IsOpened() && !screen.KeyPressed(GLFW_KEY_ESC))
-	{ 
-        
+	{
 		// Clear
 		renderer.Clear(0, 0, 0);
 		
@@ -66,10 +65,9 @@ int main(int argc, char* argv[])
 			speed_x, 
 			speed_y
 		);
-
 		
         // Update
-        sprite_mono->Update(0.01);//screen.ElapsedTime());
+        sprite_mono->Update(screen.ElapsedTime());
 
 		// Colisiones
         if ((int) sprite_mono->GetX() < 0) {

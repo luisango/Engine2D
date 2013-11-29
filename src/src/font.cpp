@@ -4,9 +4,28 @@
 #include <math.h>
 #include <stdlib.h>
 
+Font::Font(const String& filename)
+	: Image(filename, 16, 16), glyphs(new Array<Glyph>()) 
+{
+}
+
 uint32 Font::GetTextWidth(const String& text) const
 {
-    return GetWidth() * text.Length();
+	int glyphs_size   = glyphs->Size();
+	int string_length = text.Length();
+
+	if (glyphs_size != 0) {
+		uint32 size = 0;
+
+		for (int i = 0; i < string_length; i++)
+		{
+			size += (*glyphs)[text[i]].GetEndX() - (*glyphs)[text[i]].GetBeginX();
+		}
+
+		return size;
+	}
+
+	return GetWidth() * text.Length();
 }
 
 uint32 Font::GetTextHeight(const String& text) const 
