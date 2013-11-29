@@ -93,5 +93,6 @@ bool IsBetweenOrEqual(double value, double min, double max) {
 }
 
 int Random(int min, int max) {
-    return rand() % max + min;
+    /*return rand() % max + min;*/
+	return (int)min + (max - min) * rand() / RAND_MAX;
 }

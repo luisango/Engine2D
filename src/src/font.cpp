@@ -6,7 +6,7 @@
 
 uint32 Font::GetTextWidth(const String& text) const
 {
-    return GetSize() * text.Length();
+    return GetWidth() * text.Length();
 }
 
 uint32 Font::GetTextHeight(const String& text) const 
@@ -21,12 +21,11 @@ void Font::Render(const String& text, double x, double y) const
 
     for (int char_position = 0; char_position < text_length; char_position++) 
     {
-        char c = text[char_position];
         Renderer::Instance().DrawImage(
 		    this,                // Image
             x + char_offset, y,  // Position
-		    c,                   // Character
-		    16, 16,                // Width
+		    text[char_position], // Character
+		    16, 16,              // Width
 		    0                    // Angle
 	    );
 

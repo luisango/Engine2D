@@ -91,8 +91,8 @@ void Sprite::MoveTo(double x, double y, double speedX, double speedY) {
         movingSpeedY = speedY;
     }
     
-    movingSpeedX = (toX < this->x) ? -1 * movingSpeedX : movingSpeedX;
-    movingSpeedY = (toY < this->y) ? -1 * movingSpeedY : movingSpeedY;
+    movingSpeedX = (toX < this->x) ? -1 * Abs(movingSpeedX) : Abs(movingSpeedX);
+    movingSpeedY = (toY < this->y) ? -1 * Abs(movingSpeedY) : Abs(movingSpeedY);
 }
 
 void Sprite::Update(double elapsed, const Map* map) {
