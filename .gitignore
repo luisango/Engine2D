@@ -1,6 +1,7 @@
 src/Debug/*
 src/Release/*
 src/ipch/*
+src/*.suo
 *.sdf
 *.exe
 *.ipch
