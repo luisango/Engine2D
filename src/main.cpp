@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
     randomizeColor(sprite_mono);
 
     // Set string
-	String text = "Luisango #1";
+	String text = "Hello, world!";
 
     // Get width and heigth
     double text_width  = font_mono->GetTextWidth(text);
