@@ -25,14 +25,13 @@ public:
     virtual double GetLastV() const { return lastV; }
 protected:
     virtual uint32 GetTexId() const { return gltex; }
-	uint32 gltex;
 
 private:
     String filename;
     uint16 hframes, vframes;
     uint16 width, height;
     int32 handlex, handley;
-	//uint32 gltex;
+	uint32 gltex;
     double lastU, lastV;
 };
 

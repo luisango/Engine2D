@@ -29,24 +29,9 @@ Font::Font(const String& filename)
         glyphs->Add(g);
     }
 
-    if (image_buffer) {
-		// TAREA: Generar la textura de OpenGL
-        // Paso 1
-        glGenTextures(1, &gltex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_x, image_y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_buffer);
 
-        // Paso 2
-        Bind();
-
-        // Paso 3
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-        // Paso 4
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_x, image_y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_buffer);
-
-        // Paso 5
-        stbi_image_free(image_buffer);
-	}
+    stbi_image_free(image_buffer);
 }
 
 uint32 Font::GetTextWidth(const String& text) const

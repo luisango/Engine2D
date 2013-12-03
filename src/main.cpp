@@ -30,8 +30,8 @@ int main(int argc, char* argv[])
 
     // Load speed
     //             v------ (-1) porque el punto inicial colisiona con 0 y cambia la velocidad
-    int speed_x = 0;//-1 * Random(128, 255);
-    int speed_y = 0;//-1 * Random(128, 255);
+    int speed_x = -1 * Random(128, 255);
+    int speed_y = -1 * Random(128, 255);
 
     // Load font & create sprite
     Font   * font_mono   = rm.LoadFont("data/arial16.png");
@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
 		);
 		
         // Update
-        //sprite_mono->Update(screen.ElapsedTime());
+        sprite_mono->Update(screen.ElapsedTime());
 
 		// Colisiones
         if ((int) sprite_mono->GetX() < 0) {
@@ -102,8 +102,6 @@ int main(int argc, char* argv[])
 			sprite_mono->GetBlue(),
 			sprite_mono->GetAlpha()
 		);
-
-		renderer.SetColor(255, 255, 255, 255);
 
 		((Font *) sprite_mono->GetImage())->Render(text, sprite_mono->GetX(), sprite_mono->GetY());
 
