@@ -8,7 +8,7 @@
 class Glyph
 { 
 public:
-	Glyph();
+	Glyph() { }
     Glyph(int frame_width, int frame_height, int glyph_row, int glyph_column, unsigned char * image_buffer);
 
     virtual double GetStartX() { return start_x; }

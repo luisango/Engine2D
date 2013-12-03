@@ -30,11 +30,11 @@ int main(int argc, char* argv[])
 
     // Load speed
     //             v------ (-1) porque el punto inicial colisiona con 0 y cambia la velocidad
-    int speed_x = -1 * Random(128, 255);
-    int speed_y = -1 * Random(128, 255);
+    int speed_x = 0;//-1 * Random(128, 255);
+    int speed_y = 0;//-1 * Random(128, 255);
 
     // Load font & create sprite
-    Font   * font_mono   = rm.LoadFont("data/monospaced.png");
+    Font   * font_mono   = rm.LoadFont("data/arial16.png");
     Sprite * sprite_mono = new Sprite(font_mono);
 
     // Set blend mode by default
@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
 		);
 		
         // Update
-        sprite_mono->Update(screen.ElapsedTime());
+        //sprite_mono->Update(screen.ElapsedTime());
 
 		// Colisiones
         if ((int) sprite_mono->GetX() < 0) {
@@ -96,13 +96,14 @@ int main(int argc, char* argv[])
 
 		screen.SetTitle("SPEED X = " + String::FromFloat(speed_x) + " SPEED Y = "+ String::FromFloat(speed_y));
 
-
 		renderer.SetColor(
 			sprite_mono->GetRed(),
 			sprite_mono->GetGreen(),
 			sprite_mono->GetBlue(),
 			sprite_mono->GetAlpha()
 		);
+
+		renderer.SetColor(255, 255, 255, 255);
 
 		((Font *) sprite_mono->GetImage())->Render(text, sprite_mono->GetX(), sprite_mono->GetY());
 
