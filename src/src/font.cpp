@@ -41,7 +41,7 @@ uint32 Font::GetTextWidth(const String& text) const
 
 	for (int i = 0; i < string_length; i++)
 	{
-		width += (*glyphs)[text[i]].GetWidth();
+		width += (*glyphs)[(unsigned char) text[i]].GetWidth();
 	}
 
 	return width;
@@ -54,7 +54,7 @@ uint32 Font::GetTextHeight(const String& text) const
 
 	for (int i = 0; i < string_length; i++)
 	{
-		uint32 actual_height = (*glyphs)[text[i]].GetHeight();
+		uint32 actual_height = (*glyphs)[(unsigned char) text[i]].GetHeight();
 
 		if (actual_height > height)
 			height = actual_height;
@@ -79,6 +79,6 @@ void Font::Render(const String& text, double x, double y) const
 		    0                                    // Angle
 	    );
 
-        char_offset += (*glyphs)[text[char_position]].GetWidth();
+        char_offset += (*glyphs)[(unsigned char) text[char_position]].GetWidth();
     }
 }
