@@ -2,21 +2,10 @@
 
 #include "include/u-gine.h"
 #include <math.h>
-#include <time.h>
 
 const int WIDTH = 800;
 const int HEIGHT = 600;
 const bool FULLSCREEN = false;
-
-void randomizeColor(Sprite * spr)
-{
-    spr->SetColor(
-        Random(0, 255), // r
-        Random(0, 255), // g
-        Random(0, 255), // b
-        Random(0, 255)  // a
-    );
-}
 
 int main(int argc, char* argv[])
 { 
@@ -24,86 +13,106 @@ int main(int argc, char* argv[])
     const Renderer& renderer  = Renderer::Instance();
     ResourceManager& rm       = ResourceManager::Instance(); 
 
-	srand(time(NULL));
-
     screen.Open(WIDTH, HEIGHT, FULLSCREEN); 
 
-    // Load speed
-    //             v------ (-1) porque el punto inicial colisiona con 0 y cambia la velocidad
-    int speed_x = -1 * Random(128, 255);
-    int speed_y = -1 * Random(128, 255);
+	// Tarea: Cargar la imagen "data/ball.png"
+    Image * cursor = rm.LoadImage("data/pizza_cursor.png");
+    Image * tile_floor    = rm.LoadImage("data/tile_floor.png");
+    Image * tile_palmtree = rm.LoadImage("data/tile_palmtree.png");
 
-    // Load font & create sprite
-    Font   * font_mono   = rm.LoadFont("data/arial16.png");
-    Sprite * sprite_mono = new Sprite(font_mono);
 
-    // Set blend mode by default
-    sprite_mono->SetBlendMode(Renderer::BlendMode::ALPHA);
+	Image * img = rm.LoadImage("data/alien.png");
 
-    // Set initial color
-    randomizeColor(sprite_mono);
+    Image * background = rm.LoadImage("data/background.png");
+    Scene * scene = new Scene(background);
 
-    // Set string
-	String text = "Hello, world!";
+    Sprite * sprite = scene->CreateSprite(img);
+    scene->GetCamera().SetBounds(0, 0, background->GetWidth(), background->GetHeight());
+    scene->GetCamera().FollowSprite(sprite);
 
-    // Get width and heigth
-    double text_width  = font_mono->GetTextWidth(text);
-    double text_height = font_mono->GetTextHeight(text);
+	double scale = 1;//0.5;
+	double scale_increment = 0.1;
     
-    // Set initial position
-	sprite_mono->SetX(0);
-	sprite_mono->SetY(0);
+	double speed_x = 0;
+	double speed_y = 0;
 
+    sprite->SetX(WIDTH / 2);
+    sprite->SetY(HEIGHT / 2);
+
+	// Tarea: centrar la imagen
+	img->SetMidHandle();
+    
 	while(screen.IsOpened() && !screen.KeyPressed(GLFW_KEY_ESC))
-	{
-		// Clear
-		renderer.Clear(0, 0, 0);
-		
-        sprite_mono->MoveTo(
-			sprite_mono->GetX() + speed_x, 
-			sprite_mono->GetY() + speed_y, 
-			speed_x, 
-			speed_y
-		);
-		
-        // Update
-        sprite_mono->Update(screen.ElapsedTime());
+	{ 
+        int32 mouse_x = screen.GetMouseX() + scene->GetCamera().GetX();
+		int32 mouse_y = screen.GetMouseY() + scene->GetCamera().GetY();
 
-		// Colisiones
-        if ((int) sprite_mono->GetX() < 0) {
-			speed_x *= -1;
-            sprite_mono->SetX(0);
-            randomizeColor(sprite_mono);
-        }
+        sprite->Update(screen.ElapsedTime());
+        scene->Update(screen.ElapsedTime());
 
-        if ((int) sprite_mono->GetX() + text_width > WIDTH) {
-            speed_x *= -1;
-            sprite_mono->SetX(WIDTH - text_width);
-            randomizeColor(sprite_mono);
-        }
+		// TAREA: Actualizar ángulo y escala de la imagen
+		scale += scale_increment * screen.ElapsedTime();
         
-        if ((int) sprite_mono->GetY() < 0) {
-            speed_y *= -1;
-            sprite_mono->SetY(0);
-            randomizeColor(sprite_mono);
-        }
+		if (scale >= 1.5) {
+			scale = 1.5;
+			scale_increment = scale_increment * -1;
+		}
 
-        if ((int) sprite_mono->GetY() + text_height > HEIGHT) {
-            speed_y *= -1;
-            sprite_mono->SetY(HEIGHT - text_height);
-            randomizeColor(sprite_mono);
-        }
+		if (scale <= 0.8) {
+			scale = 0.8;
+			scale_increment = scale_increment * -1;
+		}
+        
+		sprite->SetScale(scale, scale);
 
-		screen.SetTitle("SPEED X = " + String::FromFloat(speed_x) + " SPEED Y = "+ String::FromFloat(speed_y));
+        if (mouse_x > sprite->GetX())
+            sprite->RotateTo(-15, 10);
 
-		renderer.SetColor(
-			sprite_mono->GetRed(),
-			sprite_mono->GetGreen(),
-			sprite_mono->GetBlue(),
-			sprite_mono->GetAlpha()
+        if (mouse_x < sprite->GetX())
+            sprite->RotateTo(15, 10);
+
+        if (mouse_x == sprite->GetX())
+            sprite->RotateTo(0, 10);
+
+		if ( IsBetweenOrEqual(mouse_x, 0, WIDTH) && IsBetweenOrEqual(mouse_y, 0, HEIGHT) ) {
+			speed_x = Abs(mouse_x - sprite->GetX());
+			speed_x = (speed_x < 4) ? 4 : speed_x;
+			
+			speed_y = Abs(mouse_y - sprite->GetY());
+			speed_y = (speed_y < 4) ? 4 : speed_y;
+
+			if ( (mouse_x == sprite->GetX()) && (mouse_y == sprite->GetY()) )
+				speed_x = speed_y = 0;
+			else 
+				sprite->MoveTo(mouse_x, mouse_y, speed_x, speed_y);
+		}
+
+        screen.SetTitle(
+            " CX = " + String::FromInt((int)scene->GetCamera().GetX()) + 
+            " CY = " + String::FromInt((int)scene->GetCamera().GetY()) + 
+			" SCALE = " + String::FromInt((int)img->GetWidth()*scale) + 
+			" ANGLE = " + String::FromInt((int) sprite->GetAngle()) +
+			" SPEED = " + String::FromInt((int) sqrt(pow(speed_x, 2) + pow(speed_y, 2)))
 		);
 
-		((Font *) sprite_mono->GetImage())->Render(text, sprite_mono->GetX(), sprite_mono->GetY());
+		// TAREA: Limpiar pantalla y dibujar la imagen
+        renderer.Clear(130, 160, 250);
+        scene->Render();
+
+        // DRAW BACK
+        renderer.DrawImage(tile_palmtree, WIDTH - 200, HEIGHT - tile_floor->GetHeight() - tile_palmtree->GetHeight(), 0, tile_palmtree->GetWidth(), tile_palmtree->GetHeight(), 0);
+        
+        // DRAW MOÑOÑO
+		sprite->Render();
+
+        // DRAW FRONT
+        for (int i = 0; i < WIDTH + tile_floor->GetWidth(); i += tile_floor->GetWidth())
+        {
+            renderer.DrawImage(tile_floor, i, HEIGHT - tile_floor->GetHeight(), 0, tile_floor->GetWidth(), tile_floor->GetHeight(), 0);
+        }
+
+        // DRAW CURSOR
+        renderer.DrawImage(cursor, screen.GetMouseX(), screen.GetMouseY(), 0, cursor->GetWidth(), cursor->GetHeight(), 0);
 
         // Refrescamos la pantalla 
         screen.Refresh(); 
