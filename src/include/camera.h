@@ -7,7 +7,8 @@
 class Camera 
 {
 public:
-    Camera() : x(0), y(0), boundx0(0), boundx1(0), boundy0(0), boundy1(0), followingSprite(0) { }
+    Camera() 
+		 : x(0), y(0), boundx0(0), boundx1(0), boundy0(0), boundy1(0), followingSprite(0) { }
 
     virtual void SetPosition(double x, double y) { SetX(x); SetY(y); }
 

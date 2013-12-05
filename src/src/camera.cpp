@@ -9,24 +9,32 @@ void Camera::SetX(double x)
 {
     double realx1 = boundx1 - Screen::Instance().GetWidth();
 
-	if (x < boundx0)
-		this->x = boundx0;
-	else if (x > realx1)
-		this->x = realx1;
-	else
+	if (HasBounds()) {
+		if (x < boundx0)
+			this->x = boundx0;
+		else if (x > realx1)
+			this->x = realx1;
+		else
+			this->x = x;
+	} else {
 		this->x = x;
+	}
 }
 
 void Camera::SetY(double y)
 {
     double realy1 = boundy1 - Screen::Instance().GetHeight();
-
-	if (y < boundy0)
-		this->y = boundy0;
-	else if (y > realy1)
-		this->y = realy1;
-	else
+	
+	if (HasBounds()) {
+		if (y < boundy0)
+			this->y = boundy0;
+		else if (y > realy1)
+			this->y = realy1;
+		else
+			this->y = y;
+	} else {
 		this->y = y;
+	}
 }
 
 void Camera::SetBounds(double bx0, double by0, double bx1, double by1)
