@@ -9,15 +9,15 @@ class Camera
 public:
     Camera() : x(0), y(0), boundx0(0), boundx1(0), boundy0(0), boundy1(0), followingSprite(0) { }
 
-    virtual void SetPosition(double x, double y) { this->x = x; this->y = y; }
+    virtual void SetPosition(double x, double y) { SetX(x); SetY(y); }
 
-	virtual void SetX(double x) { this->x = x; }
-	virtual void SetY(double y) { this->y = y; }
+	virtual void SetX(double x);
+	virtual void SetY(double y);
 
 	virtual double GetX() const { return x; }
 	virtual double GetY() const { return y; }
 
-    virtual void SetBounds(double bx0, double by0, double bx1, double by1) { boundx0 = bx0; boundx1 = bx1; boundy0 = by0; boundy1 = by1; }
+    virtual void SetBounds(double bx0, double by0, double bx1, double by1);
     virtual bool HasBounds() const { return boundx1 != boundx0; }
 
     virtual double GetMinX() const { return boundx0; }

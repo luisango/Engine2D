@@ -9,9 +9,9 @@ const bool FULLSCREEN = false;
 
 int main(int argc, char* argv[])
 { 
-    Screen& screen            = Screen::Instance();
-    const Renderer& renderer  = Renderer::Instance();
-    ResourceManager& rm       = ResourceManager::Instance(); 
+    Screen& screen           = Screen::Instance();
+    const Renderer& renderer = Renderer::Instance();
+    ResourceManager& rm      = ResourceManager::Instance(); 
 
     screen.Open(WIDTH, HEIGHT, FULLSCREEN); 
 
@@ -19,7 +19,6 @@ int main(int argc, char* argv[])
     Image * cursor = rm.LoadImage("data/pizza_cursor.png");
     Image * tile_floor    = rm.LoadImage("data/tile_floor.png");
     Image * tile_palmtree = rm.LoadImage("data/tile_palmtree.png");
-
 
 	Image * img = rm.LoadImage("data/alien.png");
 
@@ -44,7 +43,7 @@ int main(int argc, char* argv[])
     
 	while(screen.IsOpened() && !screen.KeyPressed(GLFW_KEY_ESC))
 	{ 
-        int32 mouse_x = screen.GetMouseX() + scene->GetCamera().GetX();
+		int32 mouse_x = screen.GetMouseX() + scene->GetCamera().GetX();
 		int32 mouse_y = screen.GetMouseY() + scene->GetCamera().GetY();
 
         sprite->Update(screen.ElapsedTime());
@@ -74,7 +73,7 @@ int main(int argc, char* argv[])
         if (mouse_x == sprite->GetX())
             sprite->RotateTo(0, 10);
 
-		if ( IsBetweenOrEqual(mouse_x, 0, WIDTH) && IsBetweenOrEqual(mouse_y, 0, HEIGHT) ) {
+		if ( IsBetweenOrEqual(mouse_x, 0, background->GetWidth()) && IsBetweenOrEqual(mouse_y, 0, background->GetHeight()) ) {
 			speed_x = Abs(mouse_x - sprite->GetX());
 			speed_x = (speed_x < 4) ? 4 : speed_x;
 			
@@ -89,7 +88,7 @@ int main(int argc, char* argv[])
 
         screen.SetTitle(
             " CX = " + String::FromInt((int)scene->GetCamera().GetX()) + 
-            " CY = " + String::FromInt((int)scene->GetCamera().GetY()) + 
+            " CY = " + String::FromInt((int)scene->GetCamera().GetY()) +
 			" SCALE = " + String::FromInt((int)img->GetWidth()*scale) + 
 			" ANGLE = " + String::FromInt((int) sprite->GetAngle()) +
 			" SPEED = " + String::FromInt((int) sqrt(pow(speed_x, 2) + pow(speed_y, 2)))
@@ -99,20 +98,11 @@ int main(int argc, char* argv[])
         renderer.Clear(130, 160, 250);
         scene->Render();
 
-        // DRAW BACK
-        renderer.DrawImage(tile_palmtree, WIDTH - 200, HEIGHT - tile_floor->GetHeight() - tile_palmtree->GetHeight(), 0, tile_palmtree->GetWidth(), tile_palmtree->GetHeight(), 0);
-        
         // DRAW MOÑOÑO
 		sprite->Render();
 
-        // DRAW FRONT
-        for (int i = 0; i < WIDTH + tile_floor->GetWidth(); i += tile_floor->GetWidth())
-        {
-            renderer.DrawImage(tile_floor, i, HEIGHT - tile_floor->GetHeight(), 0, tile_floor->GetWidth(), tile_floor->GetHeight(), 0);
-        }
-
         // DRAW CURSOR
-        renderer.DrawImage(cursor, screen.GetMouseX(), screen.GetMouseY(), 0, cursor->GetWidth(), cursor->GetHeight(), 0);
+		renderer.DrawImage(cursor, mouse_x, mouse_y, 0, cursor->GetWidth(), cursor->GetHeight(), 0);
 
         // Refrescamos la pantalla 
         screen.Refresh(); 

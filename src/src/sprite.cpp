@@ -19,7 +19,7 @@ Sprite::Sprite(Image* image) {
     firstFrame = 0;
 	lastFrame  = image->GetHFrames() * image->GetVFrames() - 1;
     currentFrame = 0;
-	blendMode = Renderer::BlendMode::SOLID;
+	blendMode = Renderer::BlendMode::ALPHA;
     r = g = b = a = 255;
     collision = NULL;
     colPixelData = NULL;
@@ -62,7 +62,6 @@ void Sprite::RotateTo(int32 angle, double speed) {
     rotating = true;
 
     // METER LA LOGICA DE CUAL ESTÁ MAS CERCA
-    //anguloDestino - anguloActual < anguloActual - anguloDestino
     int uno  = WrapValue(toAngle - this->angle, 360);
     int otro = WrapValue(this->angle - toAngle, 360);
 
