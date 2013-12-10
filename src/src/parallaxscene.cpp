@@ -6,26 +6,34 @@ void ParallaxScene::Update(double elapsed, Map* map)
 {
 	Scene::Update(elapsed, map);
 
-	backX += (autoBackSpeedX + ( relBackSpeedX * GetCamera().GetX() )) * elapsed;
-	backY += (autoBackSpeedY + ( relBackSpeedY * GetCamera().GetY() )) * elapsed;
+    if (backLayer) {
+	    backX += autoBackSpeedX * elapsed;
+	    backY += autoBackSpeedY * elapsed;
+    }
 
-	frontX += (autoFrontSpeedX + ( relFrontSpeedX * GetCamera().GetX() )) * elapsed;
-	frontY += (autoFrontSpeedY + ( relFrontSpeedY * GetCamera().GetY() )) * elapsed;
+    if (frontLayer) {
+        frontX += autoFrontSpeedX * elapsed;
+        frontY += autoFrontSpeedY * elapsed; 
+    }
 }
 
 void ParallaxScene::RenderBackground() const
 {
-	Renderer::Instance().DrawTiledImage(
-		backLayer, 
-		0, 0, 
-		Screen::Instance().GetWidth(), Screen::Instance().GetHeight(), 
-		backX, backY
-	);
+    if (backLayer)
+	    Renderer::Instance().DrawTiledImage(
+		    backLayer, 
+		    0, 0, 
+		    Screen::Instance().GetWidth(), Screen::Instance().GetHeight(), 
+		    -backX + ( relFrontSpeedX * GetCamera().GetX() ), 
+            -backY + ( relFrontSpeedY * GetCamera().GetY() )
+	    );
 
-	Renderer::Instance().DrawTiledImage(
-		frontLayer, 
-		0, 0, 
-		Screen::Instance().GetWidth(), Screen::Instance().GetHeight(),
-		frontX, frontY
-	);
+    if (frontLayer)
+	    Renderer::Instance().DrawTiledImage(
+		    frontLayer, 
+		    0, 0, 
+		    Screen::Instance().GetWidth(), Screen::Instance().GetHeight(),
+		    -frontX + ( relFrontSpeedX * GetCamera().GetX() ), 
+            -frontY + ( relFrontSpeedY * GetCamera().GetY() )
+	    );
 }

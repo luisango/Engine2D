@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
 			if ( (mouse_x == sprite->GetX()) && (mouse_y == sprite->GetY()) )
 				speed_x = speed_y = 0;
 			else 
-				sprite->MoveTo(mouse_x, mouse_y, 150, 150);
+				sprite->MoveTo(mouse_x, mouse_y, 50, 50);
 		}
 
         screen.SetTitle(
