@@ -6,14 +6,16 @@
 class Particle : public Sprite {
 public:
     Particle() 
-        : Sprite(NULL), velocityx(0), velocityy(0), angularVelocity(0), lifetime(0), initialLifetime(0), autofade(false) { SetBlendMode(Renderer::ADDITIVE); }
+        : Sprite(NULL), velocityx(0), velocityy(0), angularVelocity(0), lifetime(0), initialLifetime(0), autofade(false) { SetBlendMode(Renderer::ALPHA); }
 
 	Particle(Image* image, double velocityx, double velocityy, double angularVelocity, double lifetime, bool autofade)
-        : Sprite(image), velocityx(velocityx), velocityy(velocityy), angularVelocity(angularVelocity), lifetime(lifetime), initialLifetime(lifetime), autofade(autofade) { SetBlendMode(Renderer::ADDITIVE); }
+        : Sprite(image), velocityx(velocityx), velocityy(velocityy), angularVelocity(angularVelocity), lifetime(lifetime), initialLifetime(lifetime), autofade(autofade) { SetBlendMode(Renderer::ALPHA); }
 
     virtual double GetLifetime() const { return lifetime; }
-
+    
 	virtual void Update(double elapsed);
+
+    //virtual void Render(const Font * font) const;
 private:
     double velocityx, velocityy;
     double angularVelocity;

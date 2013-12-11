@@ -24,17 +24,17 @@ void Emitter::Update(double elapsed) {
             g = Random(ming, maxg);
             b = Random(minb, maxb);
 
-            particles.Add(Particle(image, xvel, yvel, avel, life, autofade));
-            particles.Last().SetPosition(x, y);
-            particles.Last().SetColor(r, g, b, 255);
-			particles.Last().SetBlendMode(blendMode);
-
+            Particle p(image, xvel, yvel, avel, life, autofade);
+            p.SetPosition(x, y);
+            p.SetColor(r, g, b, 255);
+			p.SetBlendMode(blendMode);
             
+            particles.Add(p);
         }
     }
 
     // Update particles
-    for (int i = 0; particles.Size(); i++)
+    for (int i = 0; i < particles.Size(); i++)
     {
         particles[i].Update(elapsed);
 
@@ -43,14 +43,14 @@ void Emitter::Update(double elapsed) {
     }
 
 	// Delete dead particles
-	for (int i = 0; i < particlesToDelete.Size(); i++)
+	for (int i = particlesToDelete.Size() - 1; i > 0; i--)
 	{
-        particles.RemoveAt(i);
+        particles.RemoveAt(particlesToDelete[i]);
     }
 }
 
 void Emitter::Render() const {
-    for (int i = 0; particles.Size(); i++)
+    for (int i = 0; i < particles.Size(); i++)
     {
         particles[i].Render();
     }

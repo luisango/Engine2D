@@ -38,7 +38,7 @@ Sprite::Sprite(Image* image) {
 }
 
 Sprite::~Sprite() {
-    delete image;
+    image = NULL;
 }
 
 void Sprite::SetCollision(CollisionMode mode) {

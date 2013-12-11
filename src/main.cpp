@@ -3,7 +3,7 @@
 #include "include/u-gine.h"
 #include <math.h>
 
-const int WIDTH = 800;
+const int WIDTH = 1800;
 const int HEIGHT = 600;
 const bool FULLSCREEN = false;
 
@@ -14,30 +14,56 @@ int main(int argc, char* argv[])
     ResourceManager& rm      = ResourceManager::Instance(); 
 
     screen.Open(WIDTH, HEIGHT, FULLSCREEN); 
+    glfwDisable(GLFW_MOUSE_CURSOR);
+    glfwSetMousePos(WIDTH / 2, HEIGHT / 2);
 
     Scene *scene = new Scene();
 
-    Image *emission = rm.LoadImage("data/star.png");
+    Image *emission = rm.LoadImage("data/light.png");
     Emitter *emitter = scene->CreateEmitter(emission, true);
     
     emission->SetMidHandle();
 
-    emitter->SetRate(500, 1000);
-    emitter->SetVelocityX(-128, 128);
-    emitter->SetVelocityY(-128, 128);
-    emitter->SetAngularVelocity(0, 360);
-    emitter->SetLifetime(1, 2);
-    emitter->SetMinColor(0, 0, 0);
-    emitter->SetMaxColor(255, 255, 255);
+    emitter->SetBlendMode(Renderer::BlendMode::ADDITIVE);
+    emitter->SetRate(50, 150);
+    emitter->SetVelocityX(-20, 20);
+    emitter->SetVelocityY(-170, 0);
+    emitter->SetAngularVelocity(0, 0);
+    emitter->SetLifetime(1, 5);
+    emitter->SetMinColor(150, 0, 0);
+    emitter->SetMaxColor(255, 100, 50);
+
+    Array<Emitter *> emitters;
+    int necessary_emitters = (int) (WIDTH / emission->GetWidth());
+
+    for (int i = 0; i < necessary_emitters * 2; i++)
+    {
+        emitters.Add(scene->CreateEmitter(emission, true));
+
+        emitters.Last()->SetPosition(i * necessary_emitters, HEIGHT);
+
+        emitters.Last()->SetBlendMode(Renderer::BlendMode::ADDITIVE);
+        emitters.Last()->SetRate(50, 150);
+        emitters.Last()->SetVelocityX(-20, 20);
+        emitters.Last()->SetVelocityY(-170, 0);
+        emitters.Last()->SetAngularVelocity(0, 0);
+        emitters.Last()->SetLifetime(1, 5);
+        emitters.Last()->SetMinColor(150, 0, 0);
+        emitters.Last()->SetMaxColor(255, 100, 50);
+    }
 
 	while(screen.IsOpened() && !screen.KeyPressed(GLFW_KEY_ESC))
 	{   
         renderer.Clear();
         // UPDATE EMISSION
         if (screen.MouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) 
-            emitter->Start();
-        else 
-            emitter->Stop();
+            for (int i = 0; i < emitters.Size(); i++)
+                emitters[i]->Start();
+            //emitter->Start();
+        if (screen.MouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) 
+            for (int i = 0; i < emitters.Size(); i++)
+                emitters[i]->Stop();
+            //emitter->Stop();
 
         // UPDATE EMITTER POSITION
         emitter->SetX(screen.GetMouseX());
@@ -50,7 +76,8 @@ int main(int argc, char* argv[])
         scene->Render();
 
         // RENDER AIM
-        renderer.SetBlendMode(Renderer::BlendMode::ALPHA);
+        renderer.SetBlendMode(Renderer::BlendMode::ADDITIVE);
+        renderer.SetColor(255, 255, 255, 255);
         renderer.DrawImage(
             emission,
             screen.GetMouseX(), screen.GetMouseY(),

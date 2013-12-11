@@ -5,12 +5,13 @@
 #include "particle.h"
 #include "renderer.h"
 #include "types.h"
+#include "resourcemanager.h"
 
 class Image;
 
 class Emitter {
 public:
-    Emitter(Image* image, bool autofade) { this->image = image; this->autofade = autofade; this->blendMode = Renderer::ADDITIVE; SetPosition(0, 0); SetRate(1, 10); SetVelocityX(0, 0); SetVelocityY(0, 0); SetAngularVelocity(0, 0); SetLifetime(1, 5); SetMinColor(0, 0, 0); SetMaxColor(255, 255, 255); Stop(); }
+    Emitter(Image* image, bool autofade) { this->image = image; this->autofade = autofade; this->blendMode = Renderer::ALPHA; SetPosition(0, 0); SetRate(1, 10); SetVelocityX(0, 0); SetVelocityY(0, 0); SetAngularVelocity(0, 0); SetLifetime(1, 5); SetMinColor(0, 0, 0); SetMaxColor(255, 255, 255); Stop(); this->debug_font = ResourceManager::Instance().LoadFont("data/monospaced.png");}
     virtual void SetPosition(double x, double y) { SetX(x); SetY(y); }
     virtual void SetX(double x) { this->x = x; }
     virtual void SetY(double y) { this->y = y; }
@@ -48,6 +49,8 @@ private:
 
     bool emitting;
     Array<Particle> particles;
+
+    const Font * debug_font;
 };
 
 #endif
