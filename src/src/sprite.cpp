@@ -17,7 +17,7 @@ Sprite::Sprite(Image* image) {
     radius = 0;
     animFPS = 30;
     firstFrame = 0;
-	lastFrame  = image->GetHFrames() * image->GetVFrames() - 1;
+	lastFrame  = (image != NULL) ? image->GetNumFrames() - 1 : 0;
     currentFrame = 0;
 	blendMode = Renderer::BlendMode::ALPHA;
     r = g = b = a = 255;

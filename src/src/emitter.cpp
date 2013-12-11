@@ -3,26 +3,15 @@
 #include <stdlib.h>
 
 void Emitter::Update(double elapsed) {
-    // bool autofade;
-    // double x, y;
-       
-    // double minrate, maxrate;
-    // double minvelx, maxvelx;
-    // double minvely, maxvely;
-    // double minangvel, maxangvel;
-    // double minlifetime, maxlifetime;
-    // uint8 minr, ming, minb;
-    // uint8 maxr, maxg, maxb;
-    // Renderer::BlendMode blendMode;
-       
-    // bool emitting;
-    // Array<Particle> particles;
+
+	// Array de borrado de particulas
+	Array<uint32> particlesToDelete;
 
     if (emitting) {
-        int rate = 0, r = 0, g = 0, b = 0;
+        unsigned int rate = 0, r = 0, g = 0, b = 0;
         double xvel = 0, yvel = 0, avel = 0, life = 0;
 
-        rate = Random(minrate, maxrate);
+        rate = (unsigned int) Random(minrate, maxrate) * elapsed;
 
         for (int i = 0; i < rate; i++)
         {
@@ -35,12 +24,12 @@ void Emitter::Update(double elapsed) {
             g = Random(ming, maxg);
             b = Random(minb, maxb);
 
-            Particle p(image, xvel, yvel, avel, life, autofade);
-            p.SetX(x);
-            p.SetY(y);
-            p.SetColor(r, g, b);
+            particles.Add(Particle(image, xvel, yvel, avel, life, autofade));
+            particles.Last().SetPosition(x, y);
+            particles.Last().SetColor(r, g, b, 255);
+			particles.Last().SetBlendMode(blendMode);
 
-            particles.Add(p);
+            
         }
     }
 
@@ -48,6 +37,15 @@ void Emitter::Update(double elapsed) {
     for (int i = 0; particles.Size(); i++)
     {
         particles[i].Update(elapsed);
+
+		if (particles[i].GetLifetime() <= 0)
+			particlesToDelete.Add(i);
+    }
+
+	// Delete dead particles
+	for (int i = 0; i < particlesToDelete.Size(); i++)
+	{
+        particles.RemoveAt(i);
     }
 }
 
