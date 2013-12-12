@@ -4,6 +4,7 @@
 #include "sprite.h"
 
 class Particle : public Sprite {
+friend class Affector;
 public:
     Particle() 
         : Sprite(NULL), velocityx(0), velocityy(0), angularVelocity(0), lifetime(0), initialLifetime(0), autofade(false) { SetBlendMode(Renderer::ALPHA); }

@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="lib\stb_image.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\affector.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\emitter.cpp" />
     <ClCompile Include="src\font.cpp" />
@@ -29,6 +30,7 @@
     <ClCompile Include="src\sprite.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\affector.h" />
     <ClInclude Include="include\array.h" />
     <ClInclude Include="include\camera.h" />
     <ClInclude Include="include\emitter.h" />

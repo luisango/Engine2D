@@ -40,11 +40,31 @@ void Emitter::Update(double elapsed) {
 
 		if (particles[i].GetLifetime() <= 0)
 			particlesToDelete.Add(i);
+		else  // !AFFECTOR!
+			for (int a = 0; a < affectors.Size(); a++)
+			{
+				if (!affectors[a]->IsParticleAffected(&particles[i])) {
+					bool between_x = IsBetweenOrEqual(particles[i].GetX(), affectors[a]->GetStartX(), affectors[a]->GetEndX());
+					bool between_y = IsBetweenOrEqual(particles[i].GetY(), affectors[a]->GetStartY(), affectors[a]->GetEndY());
+
+					if (between_x && between_y)
+					{
+						affectors[a]->AffectParticle(&particles[i]);
+					}
+				}
+			}
     }
 
 	// Delete dead particles
 	for (int i = particlesToDelete.Size() - 1; i > 0; i--)
 	{
+		for (int a = 0; a < affectors.Size(); a++)
+		{
+			if (affectors[a]->IsParticleAffected(&particles[particlesToDelete[i]])) {
+				affectors[a]->RemoveParticle(&particles[particlesToDelete[i]]);
+			}
+		}
+
         particles.RemoveAt(particlesToDelete[i]);
     }
 }
