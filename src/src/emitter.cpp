@@ -24,10 +24,10 @@ void Emitter::Update(double elapsed) {
             g = Random(ming, maxg);
             b = Random(minb, maxb);
 
-            Particle p(image, xvel, yvel, avel, life, autofade);
-            p.SetPosition(x, y);
-            p.SetColor(r, g, b, 255);
-			p.SetBlendMode(blendMode);
+            Particle * p = new Particle(image, xvel, yvel, avel, life, autofade);
+            p->SetPosition(x, y);
+            p->SetColor(r, g, b, 255);
+			p->SetBlendMode(blendMode);
             
             particles.Add(p);
         }
@@ -36,42 +36,42 @@ void Emitter::Update(double elapsed) {
     // Update particles
     for (int i = 0; i < particles.Size(); i++)
     {
-        particles[i].Update(elapsed);
+        particles[i]->Update(elapsed);
 
-		if (particles[i].GetLifetime() <= 0)
+		if (particles[i]->GetLifetime() <= 0)
 			particlesToDelete.Add(i);
 		else  // !AFFECTOR!
 			for (int a = 0; a < affectors.Size(); a++)
 			{
-				if (!affectors[a]->IsParticleAffected(&particles[i])) {
-					bool between_x = IsBetweenOrEqual(particles[i].GetX(), affectors[a]->GetStartX(), affectors[a]->GetEndX());
-					bool between_y = IsBetweenOrEqual(particles[i].GetY(), affectors[a]->GetStartY(), affectors[a]->GetEndY());
+				if (!affectors[a]->IsParticleAffected(particles[i])) {
+					bool between_x = IsBetweenOrEqual(particles[i]->GetX(), affectors[a]->GetStartX(), affectors[a]->GetEndX());
+					bool between_y = IsBetweenOrEqual(particles[i]->GetY(), affectors[a]->GetStartY(), affectors[a]->GetEndY());
 
 					if (between_x && between_y)
 					{
-						affectors[a]->AffectParticle(&particles[i]);
+						affectors[a]->AffectParticle(particles[i]);
 					}
 				}
 			}
     }
 
 	// Delete dead particles
-	for (int i = particlesToDelete.Size() - 1; i > 0; i--)
+	for (int i = particlesToDelete.Size(); i > 0; i--)
 	{
 		for (int a = 0; a < affectors.Size(); a++)
 		{
-			if (affectors[a]->IsParticleAffected(&particles[particlesToDelete[i]])) {
-				affectors[a]->RemoveParticle(&particles[particlesToDelete[i]]);
+			if (affectors[a]->IsParticleAffected(particles[particlesToDelete[i - 1]])) {
+				affectors[a]->RemoveParticle(particles[particlesToDelete[i - 1]]);
 			}
 		}
 
-        particles.RemoveAt(particlesToDelete[i]);
+        particles.RemoveAt(particlesToDelete[i - 1]);
     }
 }
 
 void Emitter::Render() const {
     for (int i = 0; i < particles.Size(); i++)
     {
-        particles[i].Render();
+        particles[i]->Render();
     }
 }

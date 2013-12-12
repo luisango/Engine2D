@@ -26,13 +26,15 @@ public:
 	virtual void AffectParticle(Particle * p);
 	virtual void RemoveParticle(Particle * p);
 
+    virtual uint32 GetTotalParticles() { return affected_particles.Size(); }
+
 private:
 	double x0, x1, y0, y1;
 	uint8 minr, maxr, ming, maxg, minb, maxb;
 	int minvelx, maxvelx, minvely, maxvely;
 	int minangvel, maxangvel;
 
-	Array<Particle *> affected_particles;
+	Array<Particle*> affected_particles;
 };
 
 #endif

@@ -38,6 +38,9 @@ public:
 
 	virtual void AddAffector(Affector * a) { affectors.Add(a); }
 
+    virtual uint32 GetTotalParticles() { return particles.Size(); }
+    virtual Array<Affector *> GetAffectors() { return affectors; }
+
 private:
     Image* image;
     bool autofade;
@@ -53,8 +56,8 @@ private:
     Renderer::BlendMode blendMode;
 
     bool emitting;
-    Array<Particle> particles;
-	Array<Affector *> affectors;
+    Array<Particle*> particles;
+	Array<Affector*> affectors;
 
     //const Font * debug_font;
 };

@@ -15,7 +15,7 @@ bool Affector::IsParticleAffected(Particle * p)
 
 void Affector::AffectParticle(Particle * p)
 {
-	p->velocityx = Random(minvelx, maxvely);
+	p->velocityx = Random(minvelx, maxvelx);
 	p->velocityy = Random(minvely, maxvely);
 
 	p->angularVelocity = Random(minangvel, maxangvel);
@@ -23,7 +23,8 @@ void Affector::AffectParticle(Particle * p)
 	p->SetColor(
 		Random(minr, maxr),
 		Random(ming, maxg),
-		Random(minb, maxb)
+		Random(minb, maxb),
+		p->GetAlpha()
 	);
 
 	affected_particles.Add(p);

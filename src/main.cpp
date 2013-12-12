@@ -19,16 +19,17 @@ int main(int argc, char* argv[])
 
     Scene *scene = new Scene();
 
-    Image *emission = rm.LoadImage("data/star.png");
+    Image *emission = rm.LoadImage("data/light.png");
     Emitter *emitter = scene->CreateEmitter(emission, true);
     
 
 	Affector * affector = new Affector();
 	affector->SetZone(0, 0, WIDTH, HEIGHT / 2);
-	affector->SetMinColor(0, 0, 200);
-	affector->SetMaxColor(0, 255, 255);
-	affector->SetVelocityX(90, 100);
-	affector->SetVelocityY(90, 100);
+    affector->SetAngularVelocity(30, 130);
+	affector->SetMinColor(100, 100, 100);
+	affector->SetMaxColor(100, 100, 100);
+	affector->SetVelocityX(-100, 100);
+	affector->SetVelocityY(-190, -100);
 
 
     emission->SetMidHandle();
@@ -44,9 +45,9 @@ int main(int argc, char* argv[])
 	emitter->AddAffector(affector);
 
 
-	/*
+	
     Array<Emitter *> emitters;
-	int necessary_emitters = ceil((double) WIDTH * 2 / emission->GetWidth());
+	int necessary_emitters = ceil((double) WIDTH * 2 / emission->GetWidth()) + 1;
 
     for (int i = 0; i < necessary_emitters; i++)
     {
@@ -64,20 +65,23 @@ int main(int argc, char* argv[])
         emitters.Last()->SetMaxColor(255, 100, 50);
 
 		emitters.Last()->AddAffector(affector);
-    }*/
+    }
 
 	while(screen.IsOpened() && !screen.KeyPressed(GLFW_KEY_ESC))
 	{   
         renderer.Clear();
         // UPDATE EMISSION
-        if (screen.MouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) 
-            /*for (int i = 0; i < emitters.Size(); i++)
-                emitters[i]->Start();*/
+        if (screen.MouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+            for (int i = 0; i < emitters.Size(); i++)
+                emitters[i]->Start();
             emitter->Start();
-        if (screen.MouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) 
-            /*for (int i = 0; i < emitters.Size(); i++)
-                emitters[i]->Stop();*/
+        }
+
+        if (screen.MouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
+            for (int i = 0; i < emitters.Size(); i++)
+                emitters[i]->Stop();
             emitter->Stop();
+        }
 
         // UPDATE EMITTER POSITION
         emitter->SetX(screen.GetMouseX());
@@ -88,7 +92,7 @@ int main(int argc, char* argv[])
 
         // RENDER SCENE
         scene->Render();
-
+        screen.SetTitle("E = " + String::FromInt(emitter->GetTotalParticles()) + " / A = " + String::FromInt(emitter->GetAffectors()[0]->GetTotalParticles()));
         // RENDER AIM
         renderer.SetBlendMode(Renderer::BlendMode::ADDITIVE);
         renderer.SetColor(255, 255, 255, 255);

@@ -4,10 +4,12 @@ void Particle::Update(double elapsed) {
     SetX(GetX() + velocityx * elapsed);
     SetY(GetY() + velocityy * elapsed);
     
+    lifetime -= elapsed;
+
     if (lifetime <= 0)
         lifetime = 0;
-    else 
-        lifetime -= elapsed;
+    /*else 
+        lifetime -= elapsed;*/
 
     SetAngle(GetAngle() + angularVelocity * elapsed);
 
