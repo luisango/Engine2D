@@ -97,5 +97,5 @@ int Random(int min, int max) {
 	if (max == min)
 		return min;
 
-	return (int)min + (max - min) * rand() / RAND_MAX;
+	return (double)min + (max - min) * (double)rand() / RAND_MAX;
 }

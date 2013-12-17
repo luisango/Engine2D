@@ -19,7 +19,7 @@ void Emitter::Update(double elapsed) {
             yvel = Random(minvely, maxvely);
             avel = Random(minangvel, maxangvel);
             life = Random(minlifetime, maxlifetime);
-
+            
             r = Random(minr, maxr);
             g = Random(ming, maxg);
             b = Random(minb, maxb);
