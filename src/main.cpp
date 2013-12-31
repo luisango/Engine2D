@@ -17,103 +17,100 @@ int main(int argc, char* argv[])
     glfwDisable(GLFW_MOUSE_CURSOR);
     glfwSetMousePos(WIDTH / 2, HEIGHT / 2);
 
-    Scene *scene = new Scene();
+    Scene* scene = new Scene();
 
-    Image *emission = rm.LoadImage("data/light.png");
-    emission->SetMidHandle();
+    // Load images
+	Image* img_ball         = rm.LoadImage("data/ball.png");
+    Image* img_box          = rm.LoadImage("data/box.jpg");
+    Image* img_alien        = rm.LoadImage("data/alien.png");
+    Image* img_mouse_circle = rm.LoadImage("data/circle.png");
+    Image* img_mouse_rect   = rm.LoadImage("data/rect.png");
 
-    Emitter *emitter = scene->CreateEmitter(emission, true);
+    // Mid handles
+	img_ball->SetMidHandle();
+    img_box->SetMidHandle();
+    img_alien->SetMidHandle();
+    img_mouse_circle->SetMidHandle();
+    img_mouse_rect->SetMidHandle();
 
-	Affector * affector = new Affector();
-	affector->SetZone(0, 0, WIDTH, HEIGHT / 2);
-    affector->SetAngularVelocity(30, 130);
-	affector->SetMinColor(100, 100, 100);
-	affector->SetMaxColor(100, 100, 100);
-	affector->SetVelocityX(-100, 100);
-	affector->SetVelocityY(-190, -100);
+    // Create sprites
+    Sprite* spr_ball  = scene->CreateSprite(img_ball);
+    Sprite* spr_box   = scene->CreateSprite(img_box);
+    Sprite* spr_alien = scene->CreateSprite(img_alien);
+    Sprite* spr_mouse = scene->CreateSprite(img_mouse_circle); // Circle by default 
 
-    Affector * affector2 = new Affector();
-	affector2->SetZone(WIDTH / 3, HEIGHT / 3, WIDTH * 2 / 3, HEIGHT * 2 / 3 );
-    affector2->SetAngularVelocity(30, 130);
-	affector2->SetMinColor(0, 0, 100);
-	affector2->SetMaxColor(0, 100, 255);
-	affector2->SetVelocityX(-100, 100);
-	affector2->SetVelocityY(-100, 0);
+    // Set sprites' properties
+    spr_ball->SetPosition(WIDTH * 1/4, HEIGHT * 1/4);
+    spr_ball->SetRadius(img_ball->GetWidth() / 2 - 4);
+    spr_ball->SetCollision(Sprite::CollisionMode::COLLISION_CIRCLE);
 
-    emitter->SetBlendMode(Renderer::BlendMode::ADDITIVE);
-    emitter->SetRate(50, 100);
-    emitter->SetVelocityX(-20, 20);
-    emitter->SetVelocityY(-170, 0);
-    emitter->SetAngularVelocity(0, 0);
-    emitter->SetLifetime(1, 5);
-    emitter->SetMinColor(150, 0, 0);
-    emitter->SetMaxColor(255, 100, 50);
-	emitter->AddAffector(affector);
-    emitter->AddAffector(affector2);
-	
-    Array<Emitter *> emitters;
-	int necessary_emitters = ceil((double) WIDTH * 2 / emission->GetWidth()) + 1;
+    spr_box->SetPosition(WIDTH * 3/4, HEIGHT * 3/4);
+    spr_box->SetCollision(Sprite::CollisionMode::COLLISION_RECT);
 
-    for (int i = 0; i < necessary_emitters; i++)
-    {
-        emitters.Add(scene->CreateEmitter(emission, true));
+    CollisionPixelData* col_alien = rm.LoadCollisionPixelData("data/aliencol.png");
+	spr_alien->SetCollisionPixelData(col_alien);
+    spr_alien->SetPosition(img_alien->GetWidth()/2, img_alien->GetHeight()/2);//WIDTH * 1/4, HEIGHT * 3/4);
+	spr_alien->SetCollision(Sprite::CollisionMode::COLLISION_PIXEL);
 
-		emitters.Last()->SetPosition(i * emission->GetWidth() / 2, HEIGHT);
-
-        emitters.Last()->SetBlendMode(Renderer::BlendMode::ADDITIVE);
-        emitters.Last()->SetRate(50, Random(70, 150));
-        emitters.Last()->SetVelocityX(Random(-30, -10), Random(10, 30));
-        emitters.Last()->SetVelocityY(Random(-250, -120), 10);
-        emitters.Last()->SetAngularVelocity(0, 0);
-        emitters.Last()->SetLifetime(1, Random(3, 7));
-        emitters.Last()->SetMinColor(150, 0, 0);
-        emitters.Last()->SetMaxColor(255, 100, 50);
-
-		emitters.Last()->AddAffector(affector);
-        emitters.Last()->AddAffector(affector2);
-    }
+    // Set mouse properties
+    glfwSetMousePos(WIDTH / 2, HEIGHT / 2);
+	//glfwDisable(GLFW_MOUSE_CURSOR);
 
 	while(screen.IsOpened() && !screen.KeyPressed(GLFW_KEY_ESC))
 	{   
         renderer.Clear();
-        // UPDATE EMISSION
-        if (screen.MouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
-            for (int i = 0; i < emitters.Size(); i++)
-                emitters[i]->Start();
-            emitter->Start();
-        }
-
-        if (screen.MouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
-            for (int i = 0; i < emitters.Size(); i++)
-                emitters[i]->Stop();
-            emitter->Stop();
-        }
-
-        // UPDATE EMITTER POSITION
-        emitter->SetX(screen.GetMouseX());
-        emitter->SetY(screen.GetMouseY());
-
-        // UPDATE SCENE
+        
+        // Update scene
         scene->Update(screen.ElapsedTime());
 
-        // RENDER SCENE
+        // Update mouse
+        spr_mouse->SetPosition(screen.GetMouseX(), screen.GetMouseY());
+
+        // Update mouse sprite
+        if (screen.MouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT) || !spr_mouse->GetCollision()) {
+            spr_mouse->SetImage(img_mouse_circle);
+            spr_mouse->SetRadius(img_mouse_circle->GetWidth() / 2);
+            spr_mouse->SetCollision(Sprite::CollisionMode::COLLISION_CIRCLE);
+        } else if (screen.MouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
+            spr_mouse->SetImage(img_mouse_rect);
+            spr_mouse->SetCollision(Sprite::CollisionMode::COLLISION_RECT);
+        } else if (screen.MouseButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE)) {
+            spr_mouse->SetImage(img_alien);
+            spr_mouse->SetCollisionPixelData(col_alien);
+            spr_mouse->SetCollision(Sprite::CollisionMode::COLLISION_PIXEL);
+        }
+
+        // Update collision tint for mouse
+        if (spr_mouse->DidCollide()) {
+			spr_mouse->SetColor(0, 255, 0, 100);
+            spr_mouse->SetBlendMode(Renderer::BlendMode::ADDITIVE);
+        } else {
+			spr_mouse->SetColor(255, 255, 255);
+            spr_mouse->SetBlendMode(Renderer::BlendMode::ALPHA);
+        }
+
+        // Update collision tint for box
+		if (spr_box->DidCollide()) {
+			spr_box->SetColor(255, 255, 0);
+		} else {
+			spr_box->SetColor(255, 255, 255);
+        }
+
+		if (spr_ball->DidCollide()) {
+			spr_ball->SetColor(255, 255, 0);
+		} else {
+			spr_ball->SetColor(255, 255, 255);
+        }
+        
+		if (spr_alien->DidCollide()) {
+			spr_alien->SetColor(255, 255, 0);
+		} else {
+			spr_alien->SetColor(255, 255, 255);
+        }
+
+        
+        // Draw
         scene->Render();
-//        screen.SetTitle("E = " + String::FromInt(emitter->GetTotalParticles()) + " / A = " + String::FromInt(emitter->GetAffectors()[0]->GetTotalParticles()));
-        // RENDER AIM
-        renderer.SetBlendMode(Renderer::BlendMode::ADDITIVE);
-        renderer.SetColor(255, 255, 255, 255);
-        renderer.DrawImage(
-            emission,
-            screen.GetMouseX(), screen.GetMouseY(),
-            0,
-            emission->GetWidth(), emission->GetHeight()
-        );
-
-        renderer.SetColor(100, 100, 100, 100);
-        renderer.DrawRect(affector->GetStartX(), affector->GetStartY(), affector->GetEndX() - affector->GetStartX(), affector->GetEndY() - affector->GetStartY());
-
-        renderer.SetColor(0, 100, 255, 100);
-        renderer.DrawRect(affector2->GetStartX(), affector2->GetStartY(), affector2->GetEndX() - affector2->GetStartX(), affector2->GetEndY() - affector2->GetStartY());
 
         // Refrescamos la pantalla 
         screen.Refresh();

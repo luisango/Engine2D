@@ -25,4 +25,5 @@ bool IsPOT(int x);
 double Abs(double x);
 bool IsBetweenOrEqual(double value, double min, double max);
 int Random(int min, int max);
+double SquaredDistance(double x1, double y1, double x2, double y2);
 #endif

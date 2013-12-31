@@ -15,6 +15,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\affector.cpp" />
     <ClCompile Include="src\camera.cpp" />
+    <ClCompile Include="src\collisionmanager.cpp" />
+    <ClCompile Include="src\collisionpixeldata.cpp" />
     <ClCompile Include="src\emitter.cpp" />
     <ClCompile Include="src\font.cpp" />
     <ClCompile Include="src\glyph.cpp" />
@@ -33,6 +35,10 @@
     <ClInclude Include="include\affector.h" />
     <ClInclude Include="include\array.h" />
     <ClInclude Include="include\camera.h" />
+    <ClInclude Include="include\circlecollision.h" />
+    <ClInclude Include="include\collision.h" />
+    <ClInclude Include="include\collisionmanager.h" />
+    <ClInclude Include="include\collisionpixeldata.h" />
     <ClInclude Include="include\emitter.h" />
     <ClInclude Include="include\font.h" />
     <ClInclude Include="include\glinclude.h" />
@@ -42,6 +48,8 @@
     <ClInclude Include="include\math.h" />
     <ClInclude Include="include\parallaxscene.h" />
     <ClInclude Include="include\particle.h" />
+    <ClInclude Include="include\pixelcollision.h" />
+    <ClInclude Include="include\rectcollision.h" />
     <ClInclude Include="include\renderer.h" />
     <ClInclude Include="include\resourcemanager.h" />
     <ClInclude Include="include\scene.h" />

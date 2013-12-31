@@ -55,8 +55,7 @@ bool ValueInRange(double value, double min, double max) {
 }
 
 bool PointInRect(double x, double y, double rectx, double recty, double width, double height) {
-	// TAREA: Implementar funcion
-	return false;
+	return rectx <= x && x < rectx + width && recty <= y && y < recty + height;
 }
 
 void ClosestPointToRect(double x, double y, double rectx, double recty, double width, double height, double* outx, double* outy) {
@@ -65,12 +64,30 @@ void ClosestPointToRect(double x, double y, double rectx, double recty, double w
 }
 
 bool RectsOverlap(double x1, double y1, double width1, double height1, double x2, double y2, double width2, double height2) {
-	// TAREA: Implementar funcion
-	return false;
+    if (x1 > (x2 + width2) || (x1 + width1) < x2)
+		return false;
+	if (y1 > (y2 + height2) || (y1 + height1) < y2)
+		return false;
+	return true;
 }
 
 void OverlappingRect(double x1, double y1, double width1, double height1, double x2, double y2, double width2, double height2, double* outx, double* outy, double* outwidth, double* outheight) {
-	// TAREA: Implementar funcion
+	if (x2 <= x1 && x1 <= x2 + width2)
+		*outx = x1;
+	else
+		*outx = x2;
+	if (y2 <= y1 && y1 <= y2 + height2)
+		*outy = y1;
+	else
+		*outy = y2;
+	if (x2 <= x1 + width1 && x1 + width1 <= x2 + width2)
+		*outwidth = x1 + width1 - *outx;
+	else
+		*outwidth = x2 + width2 - *outx;
+	if (y2 <= y1 + height1 && y1 + height1 <= y2 + height2)
+		*outheight = y1 + height1 - *outy;
+	else
+		*outheight = y2 + height2 - *outy;
 }
 
 void TransformIsoCoords(double isoX, double isoY, double isoZ, double* screenX, double* screenY) {
@@ -98,4 +115,9 @@ int Random(int min, int max) {
 		return min;
 
 	return (double)min + (max - min) * (double)rand() / RAND_MAX;
+}
+
+double SquaredDistance(double x1, double y1, double x2, double y2)
+{
+	return pow(y2 - y1, 2) + pow(x2 - x1, 2);
 }
