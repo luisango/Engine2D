@@ -6,6 +6,7 @@
 const int WIDTH = 800;
 const int HEIGHT = 600;
 const bool FULLSCREEN = false;
+const int SPEED = 500;
 
 int main(int argc, char* argv[])
 { 
@@ -17,99 +18,64 @@ int main(int argc, char* argv[])
     glfwDisable(GLFW_MOUSE_CURSOR);
     glfwSetMousePos(WIDTH / 2, HEIGHT / 2);
 
-    Scene* scene = new Scene();
+    Map* map = rm.LoadMap("data/map.tmx");
 
-    // Load images
-	Image* img_ball         = rm.LoadImage("data/ball.png");
-    Image* img_box          = rm.LoadImage("data/box.jpg");
-    Image* img_alien        = rm.LoadImage("data/alien.png");
-    Image* img_mouse_circle = rm.LoadImage("data/circle.png");
-    Image* img_mouse_rect   = rm.LoadImage("data/rect.png");
+    Image* img_alien   = rm.LoadImage("data/alien.png");
+    Image* img_front   = rm.LoadImage("data/frontlayer.png");
+    Image* img_back    = rm.LoadImage("data/backlayer.png");
+    Image* img_emitter = rm.LoadImage("data/star.png");
 
-    // Mid handles
-	img_ball->SetMidHandle();
-    img_box->SetMidHandle();
-    img_alien->SetMidHandle();
-    img_mouse_circle->SetMidHandle();
-    img_mouse_rect->SetMidHandle();
+    MapScene* scene = new MapScene(map, img_back, img_front);
+    scene->SetRelativeBackSpeed(0.5, 0.5);
+    scene->SetRelativeFrontSpeed(1.3, 1.3);
+    scene->SetAutoBackSpeed(-58, 58);
+    scene->SetAutoFrontSpeed(50, -50);
 
-    // Create sprites
-    Sprite* spr_ball  = scene->CreateSprite(img_ball);
-    Sprite* spr_box   = scene->CreateSprite(img_box);
-    Sprite* spr_alien = scene->CreateSprite(img_alien);
-    Sprite* spr_mouse = scene->CreateSprite(img_mouse_circle); // Circle by default 
+    Emitter* emt_alien = scene->CreateEmitter(img_emitter, true);
+    emt_alien->SetLifetime(3, 5);
+    emt_alien->SetMinColor(0, 0, 0);
+    emt_alien->SetMaxColor(255, 255, 255);
+    emt_alien->SetRate(61, 100);
 
-    // Set sprites' properties
-    spr_ball->SetPosition(WIDTH * 1/4, HEIGHT * 1/4);
-    spr_ball->SetRadius(img_ball->GetWidth() / 2 - 4);
-    spr_ball->SetCollision(Sprite::CollisionMode::COLLISION_CIRCLE);
+    Sprite * spr_alien = scene->CreateSprite(img_alien);
+    spr_alien->SetPosition(192, 400);
+    spr_alien->SetCollision(Sprite::COLLISION_RECT);
 
-    spr_box->SetPosition(WIDTH * 3/4, HEIGHT * 3/4);
-    spr_box->SetCollision(Sprite::CollisionMode::COLLISION_RECT);
+    Camera& cam = scene->GetCamera();
+    cam.SetBounds(0, 0, scene->GetMap()->GetWidth(), scene->GetMap()->GetHeight());
+    scene->GetCamera().FollowSprite(spr_alien);
 
-    CollisionPixelData* col_alien = rm.LoadCollisionPixelData("data/aliencol.png");
-	spr_alien->SetCollisionPixelData(col_alien);
-    spr_alien->SetPosition(img_alien->GetWidth()/2, img_alien->GetHeight()/2);//WIDTH * 1/4, HEIGHT * 3/4);
-	spr_alien->SetCollision(Sprite::CollisionMode::COLLISION_PIXEL);
-
-    // Set mouse properties
-    glfwSetMousePos(WIDTH / 2, HEIGHT / 2);
-	//glfwDisable(GLFW_MOUSE_CURSOR);
+    spr_alien->SetX(WIDTH / 2);
+    spr_alien->SetY(HEIGHT / 2);
 
 	while(screen.IsOpened() && !screen.KeyPressed(GLFW_KEY_ESC))
 	{   
         renderer.Clear();
         
+        // Update sprite
+        if (screen.KeyPressed(GLFW_KEY_LEFT))
+            spr_alien->SetX(spr_alien->GetX() - (SPEED * screen.ElapsedTime()));
+        if (screen.KeyPressed(GLFW_KEY_RIGHT))
+            spr_alien->SetX(spr_alien->GetX() + (SPEED * screen.ElapsedTime()));
+        if (screen.KeyPressed(GLFW_KEY_UP)) 
+            spr_alien->SetY(spr_alien->GetY() - (SPEED * screen.ElapsedTime()));
+        if (screen.KeyPressed(GLFW_KEY_DOWN)) 
+            spr_alien->SetY(spr_alien->GetY() + (SPEED * screen.ElapsedTime()));
+
+        // Update emitter
+        emt_alien->SetPosition(
+            spr_alien->GetX(),
+            spr_alien->GetY()
+        );
+
+        // Collision
+        if (spr_alien->DidCollide())
+            emt_alien->Start();
+
         // Update scene
         scene->Update(screen.ElapsedTime());
 
-        // Update mouse
-        spr_mouse->SetPosition(screen.GetMouseX(), screen.GetMouseY());
-
-        // Update mouse sprite
-        if (screen.MouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT) || !spr_mouse->GetCollision()) {
-            spr_mouse->SetImage(img_mouse_circle);
-            spr_mouse->SetRadius(img_mouse_circle->GetWidth() / 2);
-            spr_mouse->SetCollision(Sprite::CollisionMode::COLLISION_CIRCLE);
-        } else if (screen.MouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
-            spr_mouse->SetImage(img_mouse_rect);
-            spr_mouse->SetCollision(Sprite::CollisionMode::COLLISION_RECT);
-        } else if (screen.MouseButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE)) {
-            spr_mouse->SetImage(img_alien);
-            spr_mouse->SetCollisionPixelData(col_alien);
-            spr_mouse->SetCollision(Sprite::CollisionMode::COLLISION_PIXEL);
-        }
-
-        // Update collision tint for mouse
-        if (spr_mouse->DidCollide()) {
-			spr_mouse->SetColor(0, 255, 0, 100);
-            spr_mouse->SetBlendMode(Renderer::BlendMode::ADDITIVE);
-        } else {
-			spr_mouse->SetColor(255, 255, 255);
-            spr_mouse->SetBlendMode(Renderer::BlendMode::ALPHA);
-        }
-
-        // Update collision tint for box
-		if (spr_box->DidCollide()) {
-			spr_box->SetColor(255, 255, 0);
-		} else {
-			spr_box->SetColor(255, 255, 255);
-        }
-
-		if (spr_ball->DidCollide()) {
-			spr_ball->SetColor(255, 255, 0);
-		} else {
-			spr_ball->SetColor(255, 255, 255);
-        }
-        
-		if (spr_alien->DidCollide()) {
-			spr_alien->SetColor(255, 255, 0);
-		} else {
-			spr_alien->SetColor(255, 255, 255);
-        }
-
-        
-        // Draw
+        // Draw scene
         scene->Render();
 
         // Refrescamos la pantalla 

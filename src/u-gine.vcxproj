@@ -22,6 +22,8 @@
     <ClCompile Include="src\glyph.cpp" />
     <ClCompile Include="src\image.cpp" />
     <ClCompile Include="src\inputmanager.cpp" />
+    <ClCompile Include="src\map.cpp" />
+    <ClCompile Include="src\mapscene.cpp" />
     <ClCompile Include="src\math.cpp" />
     <ClCompile Include="src\parallaxscene.cpp" />
     <ClCompile Include="src\particle.cpp" />
@@ -45,6 +47,8 @@
     <ClInclude Include="include\glyph.h" />
     <ClInclude Include="include\image.h" />
     <ClInclude Include="include\inputmanager.h" />
+    <ClInclude Include="include\map.h" />
+    <ClInclude Include="include\mapscene.h" />
     <ClInclude Include="include\math.h" />
     <ClInclude Include="include\parallaxscene.h" />
     <ClInclude Include="include\particle.h" />
