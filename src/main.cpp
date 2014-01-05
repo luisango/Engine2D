@@ -6,8 +6,8 @@
 const int WIDTH = 800;
 const int HEIGHT = 600;
 const bool FULLSCREEN = false;
-const int SPEED = 500;
-
+const int SPEED = 400;
+    
 int main(int argc, char* argv[])
 { 
     Screen& screen           = Screen::Instance();
@@ -18,28 +18,26 @@ int main(int argc, char* argv[])
     glfwDisable(GLFW_MOUSE_CURSOR);
     glfwSetMousePos(WIDTH / 2, HEIGHT / 2);
 
-    Map* map = rm.LoadMap("data/map.tmx");
+    Map* map = rm.LoadMap("data/map2.tmx");
 
-    Image* img_alien   = rm.LoadImage("data/alien.png");
-    Image* img_front   = rm.LoadImage("data/frontlayer.png");
-    Image* img_back    = rm.LoadImage("data/backlayer.png");
-    Image* img_emitter = rm.LoadImage("data/star.png");
+    Image* img_alien   = rm.LoadImage("data/alienanim.png", 8);   
+    Image* img_back    = rm.LoadImage("data/terrain_background.png");
 
-    MapScene* scene = new MapScene(map, img_back, img_front);
-    scene->SetRelativeBackSpeed(0.5, 0.5);
-    scene->SetRelativeFrontSpeed(1.3, 1.3);
-    scene->SetAutoBackSpeed(-58, 58);
-    scene->SetAutoFrontSpeed(50, -50);
+    Font* fnt_score = rm.LoadFont("data/monospaced.png");
 
-    Emitter* emt_alien = scene->CreateEmitter(img_emitter, true);
-    emt_alien->SetLifetime(3, 5);
-    emt_alien->SetMinColor(0, 0, 0);
-    emt_alien->SetMaxColor(255, 255, 255);
-    emt_alien->SetRate(61, 100);
+    MapScene* scene = new MapScene(map, img_back);
+    scene->SetRelativeBackSpeed(.5, .5);
+    scene->SetRelativeFrontSpeed(.3, .3);
+    scene->SetAutoBackSpeed(0, 0);
+    scene->SetAutoFrontSpeed(0, 0);
 
-    Sprite * spr_alien = scene->CreateSprite(img_alien);
+    Sprite* spr_alien = scene->CreateSprite(img_alien);
+    CollisionPixelData* cpd = rm.LoadCollisionPixelData("data/aliencol.png");
+    spr_alien->SetFPS(16);
+    spr_alien->SetScale(4, 4);
+    spr_alien->SetCollisionPixelData(cpd);
     spr_alien->SetPosition(192, 400);
-    spr_alien->SetCollision(Sprite::COLLISION_RECT);
+    spr_alien->SetCollision(Sprite::COLLISION_PIXEL);
 
     Camera& cam = scene->GetCamera();
     cam.SetBounds(0, 0, scene->GetMap()->GetWidth(), scene->GetMap()->GetHeight());
@@ -48,35 +46,65 @@ int main(int argc, char* argv[])
     spr_alien->SetX(WIDTH / 2);
     spr_alien->SetY(HEIGHT / 2);
 
+    double to_x = 0, to_y = 0;
+    int init = glfwGetTime() * 10;
+    int score = 1;
+    int final_score = 0;
+    int top_score = 3000;
+
 	while(screen.IsOpened() && !screen.KeyPressed(GLFW_KEY_ESC))
 	{   
-        renderer.Clear();
-        
+        to_x = spr_alien->GetX();
+        to_y = spr_alien->GetY();
+
+        // Update score
+        if (score > 0)
+            score = top_score - glfwGetTime() * 10 - init;
+        else
+            score = 0;
+
         // Update sprite
         if (screen.KeyPressed(GLFW_KEY_LEFT))
-            spr_alien->SetX(spr_alien->GetX() - (SPEED * screen.ElapsedTime()));
+            to_x -= SPEED;
         if (screen.KeyPressed(GLFW_KEY_RIGHT))
-            spr_alien->SetX(spr_alien->GetX() + (SPEED * screen.ElapsedTime()));
-        if (screen.KeyPressed(GLFW_KEY_UP)) 
-            spr_alien->SetY(spr_alien->GetY() - (SPEED * screen.ElapsedTime()));
-        if (screen.KeyPressed(GLFW_KEY_DOWN)) 
-            spr_alien->SetY(spr_alien->GetY() + (SPEED * screen.ElapsedTime()));
+            to_x += SPEED;
+        if (screen.KeyPressed(GLFW_KEY_UP))
+            to_y -= SPEED;
+        if (screen.KeyPressed(GLFW_KEY_DOWN))
+            to_y += SPEED;
 
-        // Update emitter
-        emt_alien->SetPosition(
-            spr_alien->GetX(),
-            spr_alien->GetY()
-        );
-
-        // Collision
-        if (spr_alien->DidCollide())
-            emt_alien->Start();
+        // Move alien
+        spr_alien->MoveTo(to_x, to_y + SPEED * 0.003, SPEED);
 
         // Update scene
         scene->Update(screen.ElapsedTime());
 
         // Draw scene
         scene->Render();
+
+        // Draw score
+        renderer.SetColor(255, 255, 255, 255);
+        renderer.DrawText(fnt_score, "Score: " + String::FromInt(score), cam.GetX() + 10, cam.GetY() + 10);
+
+        // Win condition
+        if (IsBetweenOrEqual(spr_alien->GetX(), 650, 780) && IsBetweenOrEqual(spr_alien->GetY(), 6000, 6150)) {
+            if (!final_score)
+                final_score = score;
+
+            String final_text = "FINAL SCORE: " + String::FromInt(final_score);
+            double fs_x = cam.GetX() + WIDTH / 2 - fnt_score->GetTextWidth(final_text) / 2;
+            double fs_y = cam.GetY() + HEIGHT / 2;
+            int border = 2;
+
+            renderer.SetColor(0, 0, 0, 255);
+            for (int i = -1 * border; i < border + 1; i++)
+                for (int z = -1 * border; z < border + 1; z++)
+                    renderer.DrawText(fnt_score, final_text, fs_x + i, fs_y + z);
+
+            renderer.SetColor(Random(0, 255), Random(0, 255), Random(0, 255), 255);
+            renderer.DrawText(fnt_score, final_text, fs_x, fs_y);
+        }
+
 
         // Refrescamos la pantalla 
         screen.Refresh();

@@ -93,8 +93,5 @@ bool CollisionManager::PixelsToRect(const CollisionPixelData* pixels, double px,
 
 bool CollisionManager::RectToRect(double x1, double y1, double w1, double h1, double x2, double y2, double w2, double h2) const
 {
-    Screen::Instance().SetTitle("X ( " + String::FromInt(w1+h1) + " )( " + String::FromInt(x1) + ", " + String::FromInt(y1) + " ) :: Y ( " + String::FromInt(w2+h2) + " )( " + String::FromInt(x2) + ", " + String::FromInt(y2) + " )");
-    if (x2 < 5 && y2 < 5)
-        int i = 0;
 	return RectsOverlap(x1, y1, w1, h1, x2, y2, w2, h2);
 }

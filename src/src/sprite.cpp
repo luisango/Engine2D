@@ -1,7 +1,8 @@
 #include "../include/sprite.h"
+#include "../include/screen.h"
 #include "../include/rectcollision.h"
 #include "../include/image.h"
-//#include "../include/map.h"
+#include "../include/map.h"
 #include "../include/math.h"
 #include "../include/pixelcollision.h"
 #include "../include/renderer.h"
@@ -78,7 +79,12 @@ bool Sprite::CheckCollision(Sprite* sprite) {
 
 bool Sprite::CheckCollision(const Map* map) {
 	// TAREA: Implementar
-	return false;
+
+    if (collision  &&  map->CheckCollision(collision)) {
+		collided = true;
+		return true;
+	}
+		return false;
 }
 
 void Sprite::RotateTo(int32 angle, double speed) {
@@ -101,6 +107,7 @@ void Sprite::RotateTo(int32 angle, double speed) {
 
 void Sprite::MoveTo(double x, double y, double speedX, double speedY) {
 	// TAREA: Implementar
+    
 
     toX = x;
     toY = y;
@@ -108,7 +115,7 @@ void Sprite::MoveTo(double x, double y, double speedX, double speedY) {
 
 	if (speedY == 0) {
 		double time = Abs((toX - this->x) / speedX) + Abs((toY - this->y) / speedX);
-
+         
         movingSpeedX = Abs(toX - this->x) / time;
         movingSpeedY = Abs(toY - this->y) / time;
 	} else {
@@ -126,10 +133,17 @@ void Sprite::Update(double elapsed, const Map* map) {
 	collided = false;
 
 	// TAREA: Actualizar animacion
-    currentFrame += 1;
-    
-    if (currentFrame > lastFrame)
-        currentFrame = firstFrame;
+
+    // Actualizamos la animación 
+    currentFrame += animFPS * elapsed;
+
+    // Si nos intentan trolear con frames que no existen...
+	if (currentFrame < firstFrame)
+		currentFrame = firstFrame;
+
+    // Si se pasa del ultimo frame... (y en caso de que *elapsed)
+	if (currentFrame >= lastFrame + 1)
+		currentFrame = firstFrame;
 
 	// TAREA: Actualizar rotacion animada
     if (rotating) {
@@ -144,16 +158,27 @@ void Sprite::Update(double elapsed, const Map* map) {
     }
     
 	// TAREA: Actualizar movimiento animado
-	if (moving) {
-		x += movingSpeedX * elapsed;
-		y += movingSpeedY * elapsed;
+	if (moving)
+	{
+		prevX = x;
+		prevY = y;
 
-		if ( (movingSpeedX < 0 && x <= toX) || (0 < movingSpeedX && toX <= x) )
+		x = x + movingSpeedX * elapsed;
+		y = y + movingSpeedY * elapsed;
+
+		UpdateCollisionBox();
+		if (map && CheckCollision(map))
+		{
+			x = prevX;
+			y = prevY;
+		}
+		
+		if ((movingSpeedX < 0 && x <= toX) || (0 < movingSpeedX && toX <= x))
 			x = toX;
-		if ( (movingSpeedY < 0 && y <= toY) || (0 < movingSpeedY && toY <= y) )
+		if ((movingSpeedY < 0 && y <= toY) || (0 < movingSpeedY && toY <= y))
 			y = toY;
 
-		if (x == toX && y == toY)
+		if ((x == prevX && y == prevY) || (x == toX && y == toY))
 			moving = false;
 	}
 

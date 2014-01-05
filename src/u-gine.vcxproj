@@ -36,6 +36,8 @@
   <ItemGroup>
     <ClInclude Include="include\affector.h" />
     <ClInclude Include="include\array.h" />
+    <ClInclude Include="include\bone.h" />
+    <ClInclude Include="include\bonedata.h" />
     <ClInclude Include="include\camera.h" />
     <ClInclude Include="include\circlecollision.h" />
     <ClInclude Include="include\collision.h" />
@@ -43,6 +45,7 @@
     <ClInclude Include="include\collisionpixeldata.h" />
     <ClInclude Include="include\emitter.h" />
     <ClInclude Include="include\font.h" />
+    <ClInclude Include="include\frame.h" />
     <ClInclude Include="include\glinclude.h" />
     <ClInclude Include="include\glyph.h" />
     <ClInclude Include="include\image.h" />
@@ -58,6 +61,8 @@
     <ClInclude Include="include\resourcemanager.h" />
     <ClInclude Include="include\scene.h" />
     <ClInclude Include="include\screen.h" />
+    <ClInclude Include="include\skeletondata.h" />
+    <ClInclude Include="include\skeletonsprite.h" />
     <ClInclude Include="include\sprite.h" />
     <ClInclude Include="include\string.h" />
     <ClInclude Include="include\types.h" />

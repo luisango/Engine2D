@@ -30,33 +30,41 @@ Map::Map(const String &filename, uint16 firstColId) {
 
     xml_node<>* node_tileset = node_map->first_node("tileset");
 
-	int firstGid = atoi(node_tileset->first_attribute("firstgid")->value());
-	uint16 tilesetTileWidth = atoi(node_tileset->first_attribute("tilewidth")->value());
-	uint16 tilesetTileHeight = atoi(node_tileset->first_attribute("tileheight")->value());
+	int offset_x = 0;
+    int offset_y = 0;
 
-	int offsetX = 0, offsetY = 0;
-	if ( node_tileset->first_node("tileoffset") ) {
-		offsetX = atoi(node_tileset->first_node("tileoffset")->first_attribute("x")->value());
-		offsetY = atoi(node_tileset->first_node("tileoffset")->first_attribute("y")->value());
+	if (node_tileset->first_node("tileoffset")) {
+		offset_x = atoi(node_tileset->first_node("tileoffset")->first_attribute("x")->value());
+		offset_y = atoi(node_tileset->first_node("tileoffset")->first_attribute("y")->value());
 	}
 
     imageFile = String(node_tileset->first_node("image")->first_attribute("source")->value()).StripDir();
 
-	int imageWidth = atoi(node_tileset->first_node("image")->first_attribute("width")->value());
-	int imageHeight = atoi(node_tileset->first_node("image")->first_attribute("height")->value());
+	xml_node<>* data_node = node_map->first_node("layer")->first_node("data");
 
-	// Leemos el primer layer, sin codificacion ni compresion (los demas son ignorados)
-	xml_node<>* dataNode = node_map->first_node("layer")->first_node("data");
-	if ( dataNode->first_attribute("encoding") || dataNode->first_attribute("compression") ) return;
-	xml_node<>* tileNode = dataNode->first_node("tile");
-	while ( tileNode ) {
-        tileIds.Add(atoi(tileNode->first_attribute("gid")->value()) - firstGid);
-		tileNode = tileNode->next_sibling("tile");
+	if (data_node->first_attribute("encoding") || data_node->first_attribute("compression")) 
+        return;
+
+	xml_node<>* tile_node = data_node->first_node("tile");
+	int first_gid = atoi(node_tileset->first_attribute("firstgid")->value());
+
+	while (tile_node) {
+        tileIds.Add(atoi(tile_node->first_attribute("gid")->value()) - first_gid);
+		tile_node = tile_node->next_sibling("tile");
 	}
 
-	// Cargamos la imagen
-    image = ResourceManager::Instance().LoadImage(filename.ExtractDir() + "/" + imageFile, imageWidth/tilesetTileWidth, imageHeight/tilesetTileHeight);
-	image->SetHandle(offsetX, offsetY);
+    int tileset_tile_width = atoi(node_tileset->first_attribute("tilewidth")->value());
+	int tileset_tile_height = atoi(node_tileset->first_attribute("tileheight")->value());
+    int image_width = atoi(node_tileset->first_node("image")->first_attribute("width")->value());
+	int image_height = atoi(node_tileset->first_node("image")->first_attribute("height")->value());
+
+    image = ResourceManager::Instance().LoadImage(
+        filename.ExtractDir() + "/" + imageFile, 
+        image_width / tileset_tile_width, 
+        image_height / tileset_tile_height
+    );
+
+	image->SetHandle(offset_x, offset_y);
 
 	valid = true;
 }
