@@ -27,7 +27,11 @@ public:
     virtual int32 GetTileId(uint16 column, uint16 row) const { return tileIds[row*GetColumns() + column]; }
     virtual double GetGroundY(double x, double y) const;
     virtual uint16 GetFirstColId() const { return firstColId; }
+    
+    virtual void SetMapTint(uint8 r, uint8 g, uint8 b) { mapr_t = r; mapg_t = g; mapb_t = b; }
 private:
+    uint8  mapr_t, mapg_t, mapb_t;
+
     bool valid;
     String filename;
     uint16 width, height;

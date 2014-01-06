@@ -70,6 +70,8 @@ Map::Map(const String &filename, uint16 firstColId) {
 }
 
 void Map::Render() const {
+    Renderer::Instance().SetColor(mapr_t, mapg_t, mapb_t, 255);
+
 	for ( uint16 y = 0; y < GetRows(); y++ ) {
 		for ( uint16 x = 0; x < GetColumns(); x++ ) {
 			if ( GetTileId(x, y) >= 0 ) {
@@ -77,6 +79,8 @@ void Map::Render() const {
 			}
 		}
 	}
+
+    Renderer::Instance().SetColor(255, 255, 255, 255);
 }
 
 bool Map::CheckCollision(const Collision* collision) const {

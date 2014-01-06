@@ -64,7 +64,7 @@ void Scene::Update(double elapsed, Map* map) {
 void Scene::Render() const {
 	Renderer::Instance().Clear(backr, backg, backb);
 	Renderer::Instance().SetOrigin(GetCamera().GetX(), GetCamera().GetY());
-	if ( backgroundImg ) Renderer::Instance().DrawImage(backgroundImg, 0, 0);
+	if (backgroundImg) Renderer::Instance().DrawImage(backgroundImg, 0, 0);
 	Renderer::Instance().SetOrigin(0, 0);
 	RenderBackground();
     Renderer::Instance().SetOrigin(GetCamera().GetX(), GetCamera().GetY());

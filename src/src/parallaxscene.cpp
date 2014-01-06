@@ -26,9 +26,12 @@ void ParallaxScene::RenderBackground() const
     
 	if (backLayer)
 	{
+        Renderer::Instance().SetColor(backr_t, backg_t, backb_t, 255);
+
 		double xPos = backX + relBackSpeedX * GetCamera().GetX();
 		double yPos = backY + relBackSpeedY * GetCamera().GetY();
 		Renderer::Instance().DrawTiledImage(backLayer, 0, 0, Screen::Instance().GetWidth(), Screen::Instance().GetHeight(), xPos, yPos);
+        Renderer::Instance().SetColor(255, 255, 255, 255);
 	}
 	if (frontLayer)
 	{
