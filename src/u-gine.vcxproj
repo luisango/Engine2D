@@ -14,6 +14,7 @@
     <ClCompile Include="lib\stb_image.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\affector.cpp" />
+    <ClCompile Include="src\bone.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\collisionmanager.cpp" />
     <ClCompile Include="src\collisionpixeldata.cpp" />
@@ -31,6 +32,8 @@
     <ClCompile Include="src\resourcemanager.cpp" />
     <ClCompile Include="src\scene.cpp" />
     <ClCompile Include="src\screen.cpp" />
+    <ClCompile Include="src\skeletondata.cpp" />
+    <ClCompile Include="src\skeletonsprite.cpp" />
     <ClCompile Include="src\sprite.cpp" />
   </ItemGroup>
   <ItemGroup>

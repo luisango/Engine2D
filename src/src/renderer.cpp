@@ -31,7 +31,6 @@ void Renderer::SetColor(uint8 r, uint8 g, uint8 b, uint8 a) const {
 }
 
 void Renderer::SetOrigin(double x, double y) const {
-	// TAREA: Configurar matriz de modelado
 	glLoadIdentity();
 	glTranslatef(-x, -y, 0);
 

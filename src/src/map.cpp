@@ -16,13 +16,14 @@ Map::Map(const String &filename, uint16 firstColId) {
 
     String content = String::Read(filename);
 
+    // Parse XML
     xml_document<> doc;
     doc.parse<0>((char*) content.ToCString());
 
-    // Get elements
+    // Get elements of the XML
     xml_node<>* node_map = doc.first_node("map");
     
-    // Get attributes
+    // Get attributes of the map
     width      = atoi(node_map->first_attribute("width")->value());
 	height     = atoi(node_map->first_attribute("height")->value());
 	tileWidth  = atoi(node_map->first_attribute("tilewidth")->value());
@@ -30,6 +31,7 @@ Map::Map(const String &filename, uint16 firstColId) {
 
     xml_node<>* node_tileset = node_map->first_node("tileset");
 
+    // Process tileset
 	int offset_x = 0;
     int offset_y = 0;
 
@@ -42,9 +44,11 @@ Map::Map(const String &filename, uint16 firstColId) {
 
 	xml_node<>* data_node = node_map->first_node("layer")->first_node("data");
 
+    // Abort if encoding or compression found
 	if (data_node->first_attribute("encoding") || data_node->first_attribute("compression")) 
         return;
 
+    // Process tiles
 	xml_node<>* tile_node = data_node->first_node("tile");
 	int first_gid = atoi(node_tileset->first_attribute("firstgid")->value());
 
@@ -58,12 +62,14 @@ Map::Map(const String &filename, uint16 firstColId) {
     int image_width = atoi(node_tileset->first_node("image")->first_attribute("width")->value());
 	int image_height = atoi(node_tileset->first_node("image")->first_attribute("height")->value());
 
+    // Load tileset
     image = ResourceManager::Instance().LoadImage(
         filename.ExtractDir() + "/" + imageFile, 
         image_width / tileset_tile_width, 
         image_height / tileset_tile_height
     );
 
+    // Adjust tileset
 	image->SetHandle(offset_x, offset_y);
 
 	valid = true;

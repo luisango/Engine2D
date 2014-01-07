@@ -107,8 +107,6 @@ void Sprite::RotateTo(int32 angle, double speed) {
 
 void Sprite::MoveTo(double x, double y, double speedX, double speedY) {
 	// TAREA: Implementar
-    
-
     toX = x;
     toY = y;
     moving = true;
@@ -163,21 +161,24 @@ void Sprite::Update(double elapsed, const Map* map) {
 		prevX = x;
 		prevY = y;
 
+        // Check collision with X's
 		x = x + movingSpeedX * elapsed;
-		y = y + movingSpeedY * elapsed;
-
 		UpdateCollisionBox();
 		if (map && CheckCollision(map))
-		{
 			x = prevX;
+	    
+        // Check collision with Y's
+        y = y + movingSpeedY * elapsed;
+		UpdateCollisionBox();
+		if (map && CheckCollision(map))
 			y = prevY;
-		}
-		
+
 		if ((movingSpeedX < 0 && x <= toX) || (0 < movingSpeedX && toX <= x))
 			x = toX;
 		if ((movingSpeedY < 0 && y <= toY) || (0 < movingSpeedY && toY <= y))
 			y = toY;
 
+        // Stop...
 		if ((x == prevX && y == prevY) || (x == toX && y == toY))
 			moving = false;
 	}

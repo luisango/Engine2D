@@ -114,6 +114,13 @@ int main(int argc, char* argv[])
 
     state = next_state = GameState::BEGIN;
 
+
+    // BONES
+    SkeletonSprite * spriteBones = new SkeletonSprite("data/animation.xml");
+    spriteBones->SetPosition(0, 0);
+	spriteBones->SetFPS(32);
+
+
 	while(screen.IsOpened() && !screen.KeyPressed(GLFW_KEY_ESC))
 	{   
         state = next_state;
@@ -128,7 +135,7 @@ int main(int argc, char* argv[])
                 double fs1_x = WIDTH / 2 - font->GetTextWidth(title_text) / 2;
                 double fs1_y = HEIGHT / 4;
 
-                String credits_text = "by Luisango";
+                String credits_text = "by Luis Lalueza";
                 double fs2_x = WIDTH / 2 - font->GetTextWidth(credits_text) / 2;
                 double fs2_y = HEIGHT / 4 + font->GetHeight() + 6;
 
@@ -154,6 +161,11 @@ int main(int argc, char* argv[])
                     next_state = GameState::PLAY;
                     emitter->Start();
                 }
+
+                spriteBones->Update(screen.ElapsedTime());
+                
+		        spriteBones->Render();
+
             }
             break;
 
@@ -193,7 +205,6 @@ int main(int argc, char* argv[])
                 // Move alien
                 spr_alien->MoveTo(to_x, to_y + SPEED * 0.003, SPEED);
 
-        
                 // Update scene background tint
                 int bg_tint = max_bg_tint - (((spr_alien->GetY() - bg_tint_op)  * max_bg_tint) / map->GetHeight());
                 if (bg_tint > max_bg_tint)
