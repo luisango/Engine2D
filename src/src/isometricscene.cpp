@@ -14,12 +14,12 @@ IsometricSprite* IsometricScene::CreateSprite(Image* image, Layer layer) {
 }
 
 void IsometricScene::Update(double elapsed, Map* map) {
-    MapScene::Update(elapsed);
+    Scene::Update(elapsed, map);
 
     for (int i = 0; i < LAYER_COUNT; i++)
         GetSprites((Scene::Layer) i).Sort(CompareSprites);
 }
 
 bool IsometricScene::CompareSprites(Sprite*& first, Sprite*& second) {
-    return first->GetY() < second->GetY();
+    return first->GetScreenY() <= second->GetScreenY();
 }

@@ -55,9 +55,9 @@ void IsometricMap::GenerateLayerSprites(IsometricScene* scene) {
 void IsometricMap::Render() const {
     double screenX, screenY;
 
-    for ( uint16 y = 0; y < GetRows(); y++ ) {
-		for ( uint16 x = 0; x < GetColumns(); x++ ) {
-			if ( GetTileId(x, y) >= 0 ) {
+    for (uint16 y = 0; y < GetRows(); y++) {
+		for (uint16 x = 0; x < GetColumns(); x++) {
+			if (GetTileId(x, y) >= 0) {
                 TransformIsoCoords(x * GetTileWidth(), y * GetTileHeight(), 0, &screenX, &screenY);
                 Renderer::Instance().DrawImage(GetImage(), screenX, screenY, GetTileId(x, y));
 			}

@@ -16,7 +16,7 @@ Sprite::Sprite(Image* image) {
     angle = 0;
     scalex = scaley = 1;
     radius = 0;
-    animFPS = 30;
+    animFPS = 0;
     firstFrame = 0;
 	lastFrame  = (image != NULL) ? image->GetNumFrames() - 1 : 0;
     currentFrame = 0;
@@ -192,7 +192,7 @@ void Sprite::Render() const {
     Renderer::Instance().SetColor(r, g, b, a);
     Renderer::Instance().DrawImage(
 		GetImage(), 
-        GetX(), GetY(), 
+        GetScreenX(), GetScreenY(), 
 		GetCurrentFrame(), 
 		GetImage()->GetWidth()  * GetScaleX(), 
 		GetImage()->GetHeight() * GetScaleY(), 

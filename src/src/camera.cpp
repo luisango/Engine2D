@@ -54,8 +54,8 @@ void Camera::Update()
 {
     if (followingSprite) {
         // Update position
-        x = followingSprite->GetX() - (Screen::Instance().GetWidth() / 2);
-        y = followingSprite->GetY() - (Screen::Instance().GetHeight() / 2);
+        x = followingSprite->GetScreenX() - (Screen::Instance().GetWidth() / 2);
+        y = followingSprite->GetScreenY() - (Screen::Instance().GetHeight() / 2);
 	}
     
 	// Check bounds
