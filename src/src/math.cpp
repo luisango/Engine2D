@@ -91,8 +91,8 @@ void OverlappingRect(double x1, double y1, double width1, double height1, double
 }
 
 void TransformIsoCoords(double isoX, double isoY, double isoZ, double* screenX, double* screenY) {
-    *screenX = (isoX - isoY) * DegCos(26.6);
-    *screenY = isoZ + (isoX + isoY) * DegSin(26.6);
+    *screenX = (isoX - isoY) * 0.89442612730660787;//DegCos(26.6);
+    *screenY = isoZ + (isoX + isoY) * 0.44721572288024897;//DegSin(26.6);
 }
 
 bool IsPOT(int x) {

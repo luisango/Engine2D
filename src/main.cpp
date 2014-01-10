@@ -2,75 +2,87 @@
 
 #include "include/u-gine.h"
 
-int main(int argc, char* argv[])
-{
-	Screen & screen = Screen::Instance();
-	const Renderer & renderer = Renderer::Instance();
-	ResourceManager & resourceManager = ResourceManager::Instance();
+#define DIRECTION_LEFT 0
+#define DIRECTION_UP 24
+#define DIRECTION_RIGHT 40
+#define DIRECTION_DOWN 56
+#define ANIM_LENGTH 4
+#define FRAME_WIDTH 8
 
-	screen.Open(800, 600, false);
 
-	// PRÁCTICA_6
+inline void SetDirection(Sprite* spr, int direction) {
+    spr->SetFrameRange(direction, direction+ANIM_LENGTH-1);
+}
+
+
+int main(int argc, char* argv[]) {
+    Screen& screen = Screen::Instance();
+    ResourceManager& resManager =  ResourceManager::Instance();
+
+    screen.Open(800, 600, false);
+
+    Image* playerImg = resManager.LoadImage("data/isoplayer.png", 8, 8);
+    IsometricMap* map = resManager.LoadIsometricMap("data/isometric.tmx");
+
+    playerImg->SetHandle(playerImg->GetWidth()/2, playerImg->GetHeight());
 	
-	IsometricMap* isoMap = resourceManager.LoadIsometricMap( "data/isometric.tmx" );
-	IsometricScene* isoScene = new IsometricScene( isoMap );
-	IsometricSprite* isoSprite = isoScene->CreateSprite( resourceManager.LoadImage( "data/isoplayer.png", 8, 8 ) );
-	isoSprite->SetCollision( Sprite::COLLISION_RECT );
-	isoSprite->SetPosition( isoScene->GetMap()->GetTileWidth() * 1.5, isoScene->GetMap()->GetTileHeight() * 1.5 );
-	isoScene->GetCamera().FollowSprite( isoSprite );
+	IsometricScene scene(map);
 
-	bool leftPushed = false;
-	bool rightPushed = false;
-	bool upPushed = false;
-	bool downPushed = false;
+    Sprite* player = scene.CreateSprite(playerImg);
+    player->SetPosition(map->GetTileWidth()*1.5, map->GetTileHeight()*1.5);
 
-	while ( screen.IsOpened() && !screen.KeyPressed( GLFW_KEY_ESC ) )
-	{
-		renderer.Clear();
+    Camera& cam = scene.GetCamera();
+    cam.FollowSprite(player);
 
-		renderer.SetBlendMode( renderer.ALPHA );
+	uint16 firstColId = 3;
+    while (screen.IsOpened()  &&  !screen.KeyPressed(GLFW_KEY_ESC)) {
+		// Actualizamos movimiento y animacion del jugador
+        if ( !player->IsMoving() ) {
+            double toX = player->GetX();
+            double toY = player->GetY();
+            if (screen.KeyPressed(GLFW_KEY_LEFT)) { 
+                toX -= scene.GetMap()->GetTileWidth(); 
+                SetDirection(player, DIRECTION_LEFT); 
+            }
+
+            if (screen.KeyPressed(GLFW_KEY_RIGHT)) { 
+                toX += scene.GetMap()->GetTileWidth(); 
+                SetDirection(player, DIRECTION_RIGHT); 
+            }
+
+            if (screen.KeyPressed(GLFW_KEY_UP)) { 
+                toY -= scene.GetMap()->GetTileHeight(); 
+                SetDirection(player, DIRECTION_UP); 
+            }
+
+            if (screen.KeyPressed(GLFW_KEY_DOWN)) { 
+                toY += scene.GetMap()->GetTileHeight(); 
+                SetDirection(player, DIRECTION_DOWN); 
+            }
+			
+			// Nos movemos si la tile de destino no est· bloqueada
+            int32 tilex = toX/map->GetTileWidth();
+            int32 tiley = toY/map->GetTileHeight();
+            if ( map->GetTileId(tilex, tiley) < firstColId  &&  map->GetLayerId(tilex, tiley) < firstColId )
+                player->MoveTo(toX, toY, 256, 256);
+		}
+
+        if ( player->IsMoving() ) {
+            player->SetFPS(16);
+		} else {
+            player->SetFPS(0);
+            player->SetCurrentFrame(player->GetCurrentFrame() - (player->GetCurrentFrame()%FRAME_WIDTH));
+		}
 		
-        int8 axeX = 0;//screen.KeyPressed(
-		int8 axeY = 0;//screen.GetAxis( "vertical" );
-		if ( axeX < 0 && !leftPushed )
-		{
-			leftPushed = true;
+		// Actualizamos escena
+        scene.Update(screen.ElapsedTime());
 
-			isoSprite->SetFrameRange( 0, 0 + 4 );
-			isoSprite->SetCurrentFrame( 0 );
-		}
-		if ( axeX > 0 && !rightPushed )
-		{
-			leftPushed = true;
-
-			isoSprite->SetFrameRange( 40, 40 + 4 );
-			isoSprite->SetCurrentFrame( 40 );
-		}
-		if ( axeY < 0 && !upPushed )
-		{
-			leftPushed = true;
-
-			isoSprite->SetFrameRange( 24, 24 + 4 );
-			isoSprite->SetCurrentFrame( 24 );
-		}
-		if ( axeY > 0 && !downPushed )
-		{
-			leftPushed = true;
-
-			isoSprite->SetFrameRange( 56, 56 + 4 );
-			isoSprite->SetCurrentFrame( 56 );
-		}
-		isoSprite->SetPosition( isoSprite->GetX() + axeX, isoSprite->GetY() + axeY );
-
-		isoScene->Update( screen.ElapsedTime(), isoMap );
-		isoScene->Render();
-
-		// Refrescamos la pantalla
-		screen.Refresh();
+		// Dibujamos
+        scene.Render();
+        screen.Refresh();
 	}
 
-	// Liberamos recursos
-	resourceManager.FreeResources();
+    resManager.FreeResources();
 
 	return 0;
 }
